@@ -1,11 +1,9 @@
-const { drizzle } = require("drizzle-orm/node-postgres");
-const { Pool } = require("pg");
-require("dotenv").config();
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+import "dotenv/config"; 
 
-const pool = new Pool({
+const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-const db = drizzle(pool);
-
-module.exports = db;
+export const db = drizzle(pool);

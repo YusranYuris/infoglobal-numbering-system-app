@@ -1,9 +1,100 @@
 {
-  "id": "ff34b06c-8814-4441-9174-e214f3a2f6c6",
+  "id": "74405be8-9e20-4e52-b7da-80a85c7640f8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.dn_branches": {
+      "name": "dn_branches",
+      "schema": "",
+      "columns": {
+        "id_branch": {
+          "name": "id_branch",
+          "type": "varchar(30)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "root_id": {
+          "name": "root_id",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group": {
+          "name": "group",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sub_group": {
+          "name": "sub_group",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "sub_sg": {
+          "name": "sub_sg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "dn_branches_root_id_drawing_numbers_id_dn_fk": {
+          "name": "dn_branches_root_id_drawing_numbers_id_dn_fk",
+          "tableFrom": "dn_branches",
+          "tableTo": "drawing_numbers",
+          "columnsFrom": [
+            "root_id"
+          ],
+          "columnsTo": [
+            "id_dn"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "dn_branches_created_by_users_id_user_fk": {
+          "name": "dn_branches_created_by_users_id_user_fk",
+          "tableFrom": "dn_branches",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id_user"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.documents": {
       "name": "documents",
       "schema": "",
@@ -105,7 +196,7 @@
       "columns": {
         "id_dn": {
           "name": "id_dn",
-          "type": "char(18)",
+          "type": "varchar(30)",
           "primaryKey": true,
           "notNull": true
         },
@@ -139,6 +230,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "is_sequenced": {
+          "name": "is_sequenced",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "sequence": {
           "name": "sequence",
           "type": "integer",
@@ -150,13 +248,6 @@
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
-        },
-        "is_sequenced": {
-          "name": "is_sequenced",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -247,6 +338,43 @@
           "primaryKey": true,
           "notNull": true
         },
+        "kind_code": {
+          "name": "kind_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_code": {
+          "name": "category_code",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_code": {
+          "name": "function_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "designation_code": {
+          "name": "designation_code",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_sequenced": {
+          "name": "is_sequenced",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "description": {
           "name": "description",
           "type": "varchar(100)",
@@ -289,24 +417,30 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.pn_structure": {
-      "name": "pn_structure",
+    "public.pn_relations": {
+      "name": "pn_relations",
       "schema": "",
       "columns": {
-        "id_structure": {
-          "name": "id_structure",
+        "id_relation": {
+          "name": "id_relation",
           "type": "serial",
           "primaryKey": true,
+          "notNull": true
+        },
+        "root_id": {
+          "name": "root_id",
+          "type": "varchar(30)",
+          "primaryKey": false,
           "notNull": true
         },
         "parent_id": {
           "name": "parent_id",
           "type": "varchar(30)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "child_id": {
-          "name": "child_id",
+        "pn_code": {
+          "name": "pn_code",
           "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true
@@ -316,26 +450,26 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
-        },
-        "sequence": {
-          "name": "sequence",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_sequenced": {
-          "name": "is_sequenced",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "pn_structure_parent_id_part_numbers_id_pn_fk": {
-          "name": "pn_structure_parent_id_part_numbers_id_pn_fk",
-          "tableFrom": "pn_structure",
+        "pn_relations_root_id_part_numbers_id_pn_fk": {
+          "name": "pn_relations_root_id_part_numbers_id_pn_fk",
+          "tableFrom": "pn_relations",
+          "tableTo": "part_numbers",
+          "columnsFrom": [
+            "root_id"
+          ],
+          "columnsTo": [
+            "id_pn"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pn_relations_parent_id_part_numbers_id_pn_fk": {
+          "name": "pn_relations_parent_id_part_numbers_id_pn_fk",
+          "tableFrom": "pn_relations",
           "tableTo": "part_numbers",
           "columnsFrom": [
             "parent_id"
@@ -346,12 +480,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "pn_structure_child_id_part_numbers_id_pn_fk": {
-          "name": "pn_structure_child_id_part_numbers_id_pn_fk",
-          "tableFrom": "pn_structure",
+        "pn_relations_pn_code_part_numbers_id_pn_fk": {
+          "name": "pn_relations_pn_code_part_numbers_id_pn_fk",
+          "tableFrom": "pn_relations",
           "tableTo": "part_numbers",
           "columnsFrom": [
-            "child_id"
+            "pn_code"
           ],
           "columnsTo": [
             "id_pn"
