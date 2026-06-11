@@ -66,9 +66,7 @@ const LoginPage = () => {
           />
 
           {/* LOGIN BUTTON */}
-          <div className={styles.loginButton}>
-            <button onClick={handleLogin}>Login</button>
-          </div>
+          <button onClick={handleLogin} className={styles.loginButton}>Login</button>
         </div>
       </div>
     </div>

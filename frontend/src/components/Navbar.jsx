@@ -19,6 +19,12 @@ function Navbar() {
 
         navigate("/");
     };
+    console.log("Zustand User:", user);
+
+    console.log(
+        "LocalStorage User:",
+        JSON.parse(localStorage.getItem("user"))
+    );
 
     return (
         <header>
