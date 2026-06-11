@@ -4,11 +4,12 @@ import {
     getAllDocuments, 
     getDocument 
 } from "../controllers/documentController.js"
+import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllDocuments)
-router.get("/:id", getDocument)
-router.post("/", createDocument)
+router.get("/", authenticate, getAllDocuments)
+router.get("/:id", authenticate, getDocument)
+router.post("/", authenticate, createDocument)
 
 export default router;

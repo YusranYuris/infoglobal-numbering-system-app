@@ -4,11 +4,12 @@ import {
     createPartNumber,
     getPartNumber,
 } from "../controllers/partNumberController.js"
+import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllPartNumbers);
-router.get("/:id", getPartNumber)
-router.post("/", createPartNumber);
+router.get("/", authenticate, getAllPartNumbers);
+router.get("/:id", authenticate, getPartNumber)
+router.post("/", authenticate, createPartNumber);
 
 export default router;

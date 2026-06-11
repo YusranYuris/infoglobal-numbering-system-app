@@ -4,11 +4,12 @@ import {
     getAllBranch,
     getBranch
 } from "../controllers/dnBranchController.js"
+import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllBranch);
-router.get("/:id", getBranch)
-router.post("/", createBranch);
+router.get("/", authenticate, getAllBranch);
+router.get("/:id",  authenticate, getBranch)
+router.post("/",  authenticate, createBranch);
 
 export default router;
