@@ -1,0 +1,88 @@
+/* 
+
+---------------TYPOGRAPHY---------------
+FONT SIZES
+- 400 (Regular)
+- 500 (Medium)
+- 600 (Semi Bold) 
+- 700 (Bold)
+
+FONT FAMILY
+Inter
+
+ */
+
+/* ------------------ GLOBAL STYLES ------------------ */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  background-image: url('../assets/images/fighter-jet-blueprint.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.container {
+    max-width: 533px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+/* ------------------ COMPONENTS ------------------ */
+.login-box {
+    border: 3px solid #FAFAFA;
+    border-radius: 36px;
+    backdrop-filter: blur(6.9px);
+    padding: 5.4rem 5rem;
+    text-align: center;
+}
+
+.logo-md {
+    max-width: 50rem;
+    width: 100%;
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    padding: 2.2rem 3.3rem;
+    margin-bottom: 4.4rem;
+}
+
+input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #D9D9D9;
+    padding: 0.4rem 0.2rem;
+    margin-bottom: 5.3rem;
+    font-size: 2rem;
+    color: #FFFFFF;
+    outline: none;
+}
+
+input::placeholder {
+    color: #D9D9D9;
+}
+
+button {
+    text-align: center;
+    max-width: 100%;
+    font-size: 3rem;
+    font-weight: 600;
+    background-color: #FFFFFF;
+    padding: 0.4em 3em;
+    border-radius: 30px;
+}
+
+.login-heading {
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 5rem;
+    font-weight: 700;
+    margin-bottom: 4.4rem;
+}

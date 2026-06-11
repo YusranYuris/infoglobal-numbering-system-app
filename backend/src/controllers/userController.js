@@ -1,9 +1,10 @@
-import { db } from "../db/index.js"
-import { users } from "../db/schema/users.js"
+import { db } from "../db/index.js";
+import { users } from "../db/schema/users.js";
 import { eq } from "drizzle-orm";
+import jwt from "jsonwebtoken";
 
 export const createUser = async (req, res) => {
-    const { name, department, email, password } = req.body;
+    const { name, department, email, password, role } = req.body;
 
     const newUser = await db
         .insert(users)
@@ -11,7 +12,8 @@ export const createUser = async (req, res) => {
             name: name,
             department: department,
             email: email,
-            password: password
+            password: password,
+            role: role
         }).returning();
     
     res.status(201).json({
@@ -42,11 +44,31 @@ export const login = async (req, res) => {
                 success: false,
                 message: "Wrong password"
             });
-        }
+        };
+
+        const foundUser = user[0];
+
+        const token = jwt.sign(
+            {
+                idUser: foundUser.idUser,
+                name: foundUser.name,
+                department: foundUser.department,
+                role: foundUser.role,
+                email: foundUser.email,
+            },
+            process.env.JWT_SECRET_KEY,
+        );
 
         res.status(200).json({
             success: true,
-            user: user[0]
+            token,
+            user: {
+                idUser: foundUser.idUser,
+                name: foundUser.name,
+                department: foundUser.department,
+                role: foundUser.role,
+                email: foundUser.email,
+            }
         });
 
     } catch (error) {
