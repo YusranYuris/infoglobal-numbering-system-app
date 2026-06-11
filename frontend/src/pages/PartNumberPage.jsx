@@ -1,8 +1,13 @@
-import React from 'react'
+import Navbar from "../components/Navbar.jsx"
+import styles from "../styles/PartNumberPage.module.css"
 
 const PartNumberPage = () => {
   return (
-    <div>PartNumberPage</div>
+    <div className={styles.pageBody}>
+      <div className="container">
+        <Navbar />
+      </div>
+    </div>
   )
 }
 

@@ -1,0 +1,53 @@
+.logoMd {
+    width: 200px;
+    display: block;
+}
+
+.logoutButton {
+    color: #ECECEC;
+    text-align: center;
+    background-color: #1F1A17;
+    padding: 0.4rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 2rem;
+}
+
+.navbar {
+    max-width: 1400px;
+    width: 100%;
+    padding: 1.7rem 2rem;
+    border: 3px solid #1F1A17;
+    border-radius: 20px;
+    margin-top: 3rem;
+    margin-bottom: 6rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 9rem;
+
+    position: sticky;
+    top: 3rem;
+    z-index: 1000;
+}
+
+.navbarUl {
+    display: flex;
+    justify-content: space-between;
+    gap: 4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbarUl a {
+    font-size: 2rem;
+    padding: 0.7rem 1.7rem;
+}
+
+.navActive {
+    font-weight: 600;
+    border: 2px solid #000000;
+    border-radius: 20px;
+}

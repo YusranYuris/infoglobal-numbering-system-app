@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/axios.js";
 import { useAuthStore } from "../store/useAuthStore.js";
 
-import '../styles/global.css'
-import '../styles/LoginPage.css'
+import styles from '../styles/LoginPage.module.css'
 import infoglobalLogo from "../assets/logos/infoglobal-logo.png"
 
 const LoginPage = () => {
@@ -42,32 +41,34 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="container">
-      <div className="login-box">
-        <img className="logo-md" src={infoglobalLogo} alt="infoglobal-logo" />
-        <h1 className="login-heading">Login</h1>
+    <div className={styles.loginBody}>
+      <div className={styles.container}>
+        <div className={styles.loginBox}>
+          <img className={styles.logoMd} src={infoglobalLogo} alt="infoglobal-logo" />
+          <h1 className={styles.loginHeading}>Login</h1>
 
-        {/* EMAIL INPUT */}
-        <input 
-          className="email-form" 
-          type="email" 
-          name="email" 
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          {/* EMAIL INPUT */}
+          <input 
+            className={styles.loginInput}
+            type="email" 
+            name="email" 
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        {/* PASSWORD INPUT */}
-        <input 
-          className="password" 
-          type="password" 
-          name="password" 
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          {/* PASSWORD INPUT */}
+          <input 
+            className={styles.loginInput} 
+            type="password" 
+            name="password" 
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        {/* LOGIN BUTTON */}
-        <div className="login-button">
-          <button type="submit" onClick={handleLogin}>Login</button>
+          {/* LOGIN BUTTON */}
+          <div className={styles.loginButton}>
+            <button onClick={handleLogin}>Login</button>
+          </div>
         </div>
       </div>
     </div>

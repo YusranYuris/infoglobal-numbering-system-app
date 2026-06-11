@@ -1,8 +1,13 @@
-import React from 'react'
+import Navbar from "../components/Navbar.jsx"
+import styles from "../styles/DocumentPage.module.css"
 
 const DocumentPage = () => {
   return (
-    <div>DocumentPage</div>
+    <div className={styles.pageBody}>
+      <div className="container">
+        <Navbar />
+      </div>
+    </div>
   )
 }
 

@@ -19,9 +19,7 @@ function AppRoutes() {
                 <Route 
                     path="/"
                     element={
-                        <ProtectedRoute>
                             <LoginPage />
-                        </ProtectedRoute>
                     }
                 />
 
