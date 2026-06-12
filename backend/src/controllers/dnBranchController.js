@@ -1,7 +1,9 @@
-import { format } from "morgan";
 import { db } from "../db/index.js";
+
+import { uploadFile } from "../utils/uploadFile.js";
+
 import { dnBranches } from "../db/schema/dnBranches.js";
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 
 export const getAllBranch = async (req, res) => {
     try {
@@ -62,6 +64,8 @@ export const createBranch = async (req, res) => {
         createdBy
     } = req.body;  //Nanti yang createdBy diedit kalau udah pake JWT
 
+    const pdfFile = req.file;
+
     if (!rootId || group===null || !description || !createdBy)
         return res.status(400).json({
             success: false,
@@ -88,7 +92,14 @@ export const createBranch = async (req, res) => {
     const formattedBranch = String(`${rootId}-${formattedGroupSubGroupSubSG}`);
 
     try {
-        console.log("Nilai sub sg = " + numSubSg)
+        // Mengambil file PDF
+        let pdfUrl = null;
+
+        if (pdfFile) {
+            pdfUrl = await uploadFile("drawing-number", pdfFile, formattedBranch, description);
+        }
+
+        // Insert ke dalam tabel dn_branch pada database
         const newBranch = await db
             .insert(dnBranches)
             .values({
@@ -98,7 +109,8 @@ export const createBranch = async (req, res) => {
                 subGroup: numSubGroup,
                 subSg: numSubSg,
                 description: description,
-                createdBy: createdBy
+                createdBy: createdBy,
+                pdfUrl: pdfUrl
             }).returning();
         res.status(201).json({
             success: true,

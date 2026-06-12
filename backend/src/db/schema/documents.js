@@ -1,4 +1,4 @@
-import { pgTable, varchar, integer, boolean, timestamp} from "drizzle-orm/pg-core";
+import { pgTable, varchar, integer, boolean, timestamp, text} from "drizzle-orm/pg-core";
 
 import { users } from "./users.js";
 
@@ -13,5 +13,9 @@ export const documents = pgTable("documents", {
     description: varchar("description", { length: 100 }).notNull(),
     isSequenced: boolean("is_sequenced").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    createdBy: integer("created_by").notNull().references(() => users.idUser)
+    // Sementara karena user belum bisa request maka admin manual input
+    createdBy: varchar("created_by", { length: 50 }).notNull(), 
+    // Nanti kalau user sudah bisa request number, maka ini akan kepakai (JWT)
+    // createdBy: integer("created_by").notNull().references(() => users.idUser),
+    pdfUrl: text("pdf_url"),
 });

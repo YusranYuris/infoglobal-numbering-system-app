@@ -2,6 +2,8 @@ import { max, and, eq, asc } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { documents } from "../db/schema/documents.js";
 
+import { uploadFile } from "../utils/uploadFile.js";
+
 export const getAllDocuments = async (req, res) => {
     try {
         const allDocuments = await db
@@ -95,6 +97,14 @@ export const createDocument = async (req, res) => {
     const formattedIdDoc = `${productAbbr}-${docKind}${String(sequence).padStart(3, "0")}${String(department).padStart(2, "0")}-${companyAbbr}-${year}`;
 
     try {
+        // Mengambil file PDF
+        let pdfUrl = null;
+
+        if (pdfFile) {
+            pdfUrl = await uploadFile("document", pdfFile, formattedIdDoc, description);
+        }
+
+        // Insert ke dalam tabel documents pada database
         const newDocument = await db
             .insert(documents)
             .values({
@@ -107,7 +117,8 @@ export const createDocument = async (req, res) => {
                 year: year,
                 description: description,
                 isSequenced: isSequenced,
-                createdBy: createdBy
+                createdBy: createdBy,
+                pdfUrl: pdfUrl,
             }).returning()
         
         res.status(201).json({

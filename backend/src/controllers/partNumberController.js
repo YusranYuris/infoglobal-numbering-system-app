@@ -2,6 +2,8 @@ import { db } from "../db/index.js";
 import { partNumbers } from "../db/schema/partNumbers.js";
 import { and, eq, max } from "drizzle-orm";
 
+import { uploadFile } from "../utils/uploadFile.js";
+
 export const getAllPartNumbers = async (req, res) => {
     try {
         const allPartNumbers = await db
@@ -86,6 +88,14 @@ export const createPartNumber = async (req, res) => {
     const formattedIdPn = `${kindCode + categoryCode + functionCode}-${designationCode + formattedSequence}`;
 
     try {
+        // Mengambil file PDF
+        let pdfUrl = null;
+
+        if (pdfFile) {
+            pdfUrl = await uploadFile("drawing-number", pdfFile, formattedIdPn, description);
+        }
+
+        // Insert ke dalam tabel part_numbers pada database
         const newPartNumber = await db
             .insert(partNumbers)
             .values({

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const authenticate = (req, res, next) => {
     try {
-        const authHeader = req.header.authorization;
+        const authHeader = req.headers.authorization;
 
         if (!authHeader) {
             return res.status(401).json({

@@ -13,5 +13,8 @@ export const drawingNumbers = pgTable("drawing_numbers", {
     sequence: integer("sequence").notNull(),
     description: varchar("description", { length: 100 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    createdBy: integer("created_by").notNull().references(() => users.idUser)
+    // Sementara karena user belum bisa request maka admin manual input
+    createdBy: varchar("created_by", { length: 50 }).notNull(), 
+    // Nanti kalau user sudah bisa request number, maka ini akan kepakai (JWT)
+    // createdBy: integer("created_by").notNull().references(() => users.idUser),
 });

@@ -1,0 +1,498 @@
+{
+  "id": "f470c584-d28a-40d5-a318-91b41213b286",
+  "prevId": "b7a8a1a0-f99f-407e-879f-3391c00c2e94",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.dn_branches": {
+      "name": "dn_branches",
+      "schema": "",
+      "columns": {
+        "id_branch": {
+          "name": "id_branch",
+          "type": "varchar(30)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "root_id": {
+          "name": "root_id",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group": {
+          "name": "group",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sub_group": {
+          "name": "sub_group",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "sub_sg": {
+          "name": "sub_sg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pdf_url": {
+          "name": "pdf_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "dn_branches_root_id_drawing_numbers_id_dn_fk": {
+          "name": "dn_branches_root_id_drawing_numbers_id_dn_fk",
+          "tableFrom": "dn_branches",
+          "tableTo": "drawing_numbers",
+          "columnsFrom": [
+            "root_id"
+          ],
+          "columnsTo": [
+            "id_dn"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.documents": {
+      "name": "documents",
+      "schema": "",
+      "columns": {
+        "id_doc": {
+          "name": "id_doc",
+          "type": "varchar(30)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "product_abbr": {
+          "name": "product_abbr",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "doc_kind": {
+          "name": "doc_kind",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department": {
+          "name": "department",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_abbr": {
+          "name": "company_abbr",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_sequenced": {
+          "name": "is_sequenced",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pdf_url": {
+          "name": "pdf_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.drawing_numbers": {
+      "name": "drawing_numbers",
+      "schema": "",
+      "columns": {
+        "id_dn": {
+          "name": "id_dn",
+          "type": "varchar(30)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "drawing_kind": {
+          "name": "drawing_kind",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind_code": {
+          "name": "kind_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_code": {
+          "name": "category_code",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_code": {
+          "name": "function_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "designation_code": {
+          "name": "designation_code",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_sequenced": {
+          "name": "is_sequenced",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "drawing_numbers_created_by_users_id_user_fk": {
+          "name": "drawing_numbers_created_by_users_id_user_fk",
+          "tableFrom": "drawing_numbers",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id_user"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id_user": {
+          "name": "id_user",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department": {
+          "name": "department",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.part_numbers": {
+      "name": "part_numbers",
+      "schema": "",
+      "columns": {
+        "id_pn": {
+          "name": "id_pn",
+          "type": "varchar(30)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "kind_code": {
+          "name": "kind_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_code": {
+          "name": "category_code",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function_code": {
+          "name": "function_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "designation_code": {
+          "name": "designation_code",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_sequenced": {
+          "name": "is_sequenced",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pdf_url": {
+          "name": "pdf_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pn_relations": {
+      "name": "pn_relations",
+      "schema": "",
+      "columns": {
+        "id_relation": {
+          "name": "id_relation",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "root_id": {
+          "name": "root_id",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pn_code": {
+          "name": "pn_code",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hierarchy": {
+          "name": "hierarchy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pn_relations_root_id_part_numbers_id_pn_fk": {
+          "name": "pn_relations_root_id_part_numbers_id_pn_fk",
+          "tableFrom": "pn_relations",
+          "tableTo": "part_numbers",
+          "columnsFrom": [
+            "root_id"
+          ],
+          "columnsTo": [
+            "id_pn"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pn_relations_parent_id_part_numbers_id_pn_fk": {
+          "name": "pn_relations_parent_id_part_numbers_id_pn_fk",
+          "tableFrom": "pn_relations",
+          "tableTo": "part_numbers",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id_pn"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pn_relations_pn_code_part_numbers_id_pn_fk": {
+          "name": "pn_relations_pn_code_part_numbers_id_pn_fk",
+          "tableFrom": "pn_relations",
+          "tableTo": "part_numbers",
+          "columnsFrom": [
+            "pn_code"
+          ],
+          "columnsTo": [
+            "id_pn"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
