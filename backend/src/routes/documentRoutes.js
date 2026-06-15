@@ -11,10 +11,21 @@ import { upload } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
+// ------- DOCUMENTS ROUTES -------
+
+// Get All Documents
 router.get("/", authenticate, getAllDocuments)
-router.get("/:id", authenticate, getDocument)
+
+// Create New Document
 router.post("/", authenticate, upload.single("pdf"), createDocument)
+
+// Get Document
+router.get("/:id", authenticate, getDocument)
+
+// Update Document
 router.put("/:id", authenticate, upload.single("pdf"), updateDocument)
+
+// Delete Document
 router.delete("/:id", authenticate, deleteDocument)
 
 export default router;

@@ -7,9 +7,12 @@ import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// All Routes
+// ------- USERS ROUTES -------
+
+// Create New User
 router.post("/", authenticate, createUser);
 
+// Login
 router.post("/login", login);
 
 export default router;

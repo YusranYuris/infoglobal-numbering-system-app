@@ -11,10 +11,21 @@ import { upload } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
+// ------- DRAWING NUMBER BRANCHES ROUTES -------
+
+// Get All Branch
 router.get("/", authenticate, getAllBranch);
-router.get("/:id",  authenticate, getBranch);
+
+// Create New Branch
 router.post("/", authenticate, upload.single("pdf"), createBranch);
-router.put("/:id", authenticate, upload.single("pdf"), updateBranch)
+
+// Get Branch
+router.get("/:id",  authenticate, getBranch);
+
+// Update Branch
+router.put("/:id", authenticate, upload.single("pdf"), updateBranch);
+
+// Delete Branch
 router.delete("/:id", authenticate, deleteBranch);
 
 export default router;

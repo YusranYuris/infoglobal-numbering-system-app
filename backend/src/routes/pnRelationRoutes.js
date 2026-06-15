@@ -7,7 +7,12 @@ import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/:rootId", authenticate, getPnStructure)
+// ------- PN RELATIONS ROUTES -------
+
+// Create PN Relation
 router.post("/", authenticate, createPnRelation)
+
+// Get PN Relation Structure
+router.get("/:rootId", authenticate, getPnStructure)
 
 export default router;

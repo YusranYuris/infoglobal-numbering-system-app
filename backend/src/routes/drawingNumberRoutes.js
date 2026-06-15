@@ -4,11 +4,15 @@ import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// All Routes
+// ------- DRAWING NUMBERS ROUTES -------
+
+// Get All Drawing Numbers
 router.get("/", authenticate, getAllDrawingNumber)
 
-router.get("/:id", authenticate, getDrawingNumber)
-
+// Create New Drawing Numbers
 router.post("/", authenticate, createDrawingNumber)
+
+// Get Drawing Number
+router.get("/:id", authenticate, getDrawingNumber)
 
 export default router;
