@@ -43,3 +43,26 @@ export const createPnRelation = async (req, res) => {
         });
     }
 }
+
+export const deletePnRelation = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedPnRelation = await db
+            .delete(pnRelations)
+            .where(eq(pnRelations.idRelations, id))
+            .returning();
+        
+        res.status(200).json({
+            success: true,
+            data: deletedPnRelation[0]
+        });
+            
+    } catch (error) {
+        console.log("Error in deletePnRelation function", error)
+        res.status(500).json({
+            success: true,
+            data: deletedPnRelation[0]
+        });
+    }
+}

@@ -4,6 +4,8 @@ import { uploadFile } from "../utils/uploadFile.js";
 
 import { dnBranches } from "../db/schema/dnBranches.js";
 import { asc, desc, eq } from "drizzle-orm";
+import { deleteFile } from "../utils/deleteFile.js";
+import { renameFile } from "../utils/renameFile.js";
 
 export const getAllBranch = async (req, res) => {
     try {
@@ -125,3 +127,98 @@ export const createBranch = async (req, res) => {
         });
     };
 };
+
+// Untuk update Description dan File PDF pada Drawing Number Branch
+export const updateBranch = async (req, res) => {
+    const { id } = req.params;
+    const { description } = req.body;
+    const pdfFile = req.file;
+
+    try {
+        const updateData = {
+            description,
+        }
+
+        const formattedBranch = await db
+            .select()
+            .from(dnBranches)
+            .where(eq(dnBranches.idBranch, id))
+            .limit(1);
+
+        if (!formattedBranch.length) {
+            return res.status(404).json({
+                success: false,
+                message: "Branch not found"
+            });
+        }
+
+        if (pdfFile) {
+            await deleteFile(formattedBranch[0].pdfUrl)
+
+            const pdfUrl = await uploadFile("drawing-number", pdfFile, formattedBranch[0].idBranch, description);
+
+            updateData.pdfUrl = pdfUrl;
+        } else {
+            // Rename nama file pada Supabase Storage Bucket dan ambil URL
+            const pdfUrl = await renameFile("drawing-number" ,formattedBranch[0].idBranch, formattedBranch[0].description, description)
+
+            updateData.pdfUrl = pdfUrl;
+        }
+
+        const updatedBranch = await db
+            .update(dnBranches)
+            .set(updateData)
+            .where(eq(dnBranches.idBranch, id))
+            .returning()
+
+        res.status(200).json({
+            success: true,
+            data: updatedBranch[0]
+        });
+
+    } catch (error) {
+        console.log("Error in updateBranch function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}
+
+// Untuk delete branch Drawing Number
+export const deleteBranch = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const branch = await db
+            .select()
+            .from(dnBranches)
+            .where(eq(dnBranches.idBranch, id))
+        
+        if (branch.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Branch not found"
+            });
+        };
+
+        await deleteFile(branch[0].pdfUrl)
+
+        const deletedBranch = await db
+            .delete(dnBranches)
+            .where(eq(dnBranches.idBranch, id))
+            .returning()
+
+        res.status(200).json({
+            success: true,
+            data: deletedBranch[0]
+        })
+
+    } catch (error) {
+        console.log("Error in deleteBranch function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}

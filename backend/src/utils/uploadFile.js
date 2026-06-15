@@ -1,7 +1,7 @@
 import { supabase } from "../config/supabase.js";
 
 export const uploadFile = async (folder, file, code, description) => {
-    const fileName = `${code} - ${description}`;
+    const fileName = `${code} ${description}`;
     
     const { data, error } = await supabase.storage
         .from("infoglobal-document-files")

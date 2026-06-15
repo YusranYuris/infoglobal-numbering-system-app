@@ -1,5 +1,5 @@
 import { db } from "../db/index.js";
-import { drawingNumbers } from "../db/schema/drawingNumbers.js";
+import { drawingNumbers, dnBranches } from "../db/schema/index.js";
 import { and, eq, max } from "drizzle-orm";
 
 export const getAllDrawingNumber = async (req, res) => {
@@ -102,10 +102,28 @@ export const createDrawingNumber = async (req, res) => {
                 description: description,
                 createdBy: createdBy,
             }).returning();
+        
+        const formattedBranch = `${formattedIdDn}-00-000`
+        
+        const newBranch = await db
+            .insert(dnBranches)
+            .values({
+                idBranch: formattedBranch,
+                rootId: formattedIdDn,
+                group: 0,
+                subGroup: 0,
+                subSg: 0,
+                description: description,
+                createdBy: createdBy,
+                pdfUrl: null
+            }).returning();
             
         res.status(201).json({
             success: true,
-            data: newDrawingNumber[0],
+            data: {
+                drawingNumber: newDrawingNumber[0],
+                branch: newBranch[0]
+            }
         });
 
     } catch (error) {
