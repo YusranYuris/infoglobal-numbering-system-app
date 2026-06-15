@@ -3,6 +3,8 @@ import { db } from "../db/index.js";
 import { documents } from "../db/schema/documents.js";
 
 import { uploadFile } from "../utils/uploadFile.js";
+import { renameFile } from "../utils/renameFile.js";
+import { deleteFile } from "../utils/deleteFile.js";
 
 export const getAllDocuments = async (req, res) => {
     try {
@@ -68,6 +70,8 @@ export const createDocument = async (req, res) => {
     } = req.body;
 
     let { sequence } = req.body;
+
+    const pdfFile = req.file;
 
     if (!productAbbr || !docKind || !department || !companyAbbr || !year || !description) {
         return res.status(400).json({
@@ -165,7 +169,12 @@ export const updateDocument = async (req, res) => {
             const pdfUrl = await uploadFile("document", pdfFile, formattedIdDoc[0].idDoc, description);
 
             updateData.pdfUrl = pdfUrl;
-        } 
+        } else {
+            // Rename nama file pada Supabase Storage Bucket dan ambil URL
+            const pdfUrl = await renameFile("document", formattedIdDoc[0].idDoc, formattedIdDoc[0].description, description);
+
+            updateData.pdfUrl = pdfUrl;
+        }
 
         const updatedDocument = await db
             .update(documents)

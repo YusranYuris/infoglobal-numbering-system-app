@@ -160,7 +160,7 @@ export const updateBranch = async (req, res) => {
             updateData.pdfUrl = pdfUrl;
         } else {
             // Rename nama file pada Supabase Storage Bucket dan ambil URL
-            const pdfUrl = await renameFile("drawing-number" ,formattedBranch[0].idBranch, formattedBranch[0].description, description)
+            const pdfUrl = await renameFile("drawing-number" , formattedBranch[0].idBranch, formattedBranch[0].description, description)
 
             updateData.pdfUrl = pdfUrl;
         }

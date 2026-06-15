@@ -2,8 +2,8 @@ import { supabase } from "../config/supabase.js";
 
 export const renameFile = async (folder, code, oldDescription, newDescription) => {
     // Susun nama file lama dan nama file baru
-    const oldFileName = `${code} - ${oldDescription}`;
-    const newFileName = `${code} - ${newDescription}`;
+    const oldFileName = `${code} ${oldDescription}`;
+    const newFileName = `${code} ${newDescription}`;
 
     const oldPath = `${folder}/${oldFileName}`;
     const newPath = `${folder}/${newFileName}`;
