@@ -3,6 +3,8 @@ import { partNumbers } from "../db/schema/partNumbers.js";
 import { and, eq, max } from "drizzle-orm";
 
 import { uploadFile } from "../utils/uploadFile.js";
+import { deleteFile } from "../utils/deleteFile.js";
+import { renameFile } from "../utils/renameFile.js";
 
 export const getAllPartNumbers = async (req, res) => {
     try {
@@ -59,6 +61,10 @@ export const createPartNumber = async (req, res) => {
     } = req.body;
 
     let { sequence } = req.body;
+    
+    const pdfFile = req.file;
+
+    console.log(pdfFile)
 
     if (!kindCode || !categoryCode || !functionCode || !designationCode || !description || !createdBy) {
         return res.status(400).json({
@@ -67,7 +73,7 @@ export const createPartNumber = async (req, res) => {
         });
     };
 
-    if (isSequenced) {
+    if (isSequenced === true) {
         const maxResult = await db
             .select({maxSeq: max(partNumbers.sequence)})
             .from(partNumbers)
@@ -92,7 +98,7 @@ export const createPartNumber = async (req, res) => {
         let pdfUrl = null;
 
         if (pdfFile) {
-            pdfUrl = await uploadFile("drawing-number", pdfFile, formattedIdPn, description);
+            pdfUrl = await uploadFile("part-number", pdfFile, formattedIdPn, description);
         }
 
         // Insert ke dalam tabel part_numbers pada database
@@ -108,6 +114,7 @@ export const createPartNumber = async (req, res) => {
                 sequence: sequence,
                 description: description,
                 createdBy: createdBy,
+                pdfUrl: pdfUrl
             }).returning();
             
         res.status(201).json({
@@ -122,4 +129,99 @@ export const createPartNumber = async (req, res) => {
             message: error.message
         });
     };
+}
+
+// Untuk update Description dan File PDF pada Part Number
+export const updatePartNumber = async (req, res) => {
+    const { id } = req.params;
+    const { description } = req.body;
+    const pdfFile = req.file;
+
+    try {
+        const updateData = {
+            description
+        }
+
+        const formattedPartNumber = await db
+            .select()
+            .from(partNumbers)
+            .where(eq(partNumbers.idPn, id))
+            .limit(1)
+        
+        if (!formattedPartNumber.length) {
+            return res.status(404).json({
+                success: false,
+                message: "Part Number not found"
+            });
+        }
+
+        if (pdfFile) {
+            await deleteFile(formattedPartNumber[0].pdfUrl)
+
+            const pdfUrl = await uploadFile("part-number", pdfFile, formattedPartNumber[0].idPn, description)
+
+            updateData.pdfUrl = pdfUrl;
+
+        } else {
+            const pdfUrl = await renameFile("part-number", formattedPartNumber[0].idPn, formattedPartNumber[0].description, description)
+
+            updateData.pdfUrl = pdfUrl
+        }
+
+        const updatedPartNumber = await db
+            .update(partNumbers)
+            .set(updateData)
+            .where(eq(partNumbers.idPn, id))
+            .returning()
+        
+        res.status(200).json({
+            success: true,
+            data: updatedPartNumber[0]
+        });
+
+    } catch (error) {
+        console.log("Error in updatePartNumber function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}
+
+// Untuk delete Part Number
+export const deletePartNumber = async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        const partNumber = await db
+            .select()
+            .from(partNumbers)
+            .where(eq(partNumbers.idPn, id))
+        
+        if (!partNumber.length) {
+            return res.status(404).json({
+                success: false,
+                message: "Part Number not found"
+            });
+        }
+    
+        await deleteFile(partNumber[0].pdfUrl)
+
+        const deletedPartNumber = await db
+            .delete(partNumbers)
+            .where(eq(partNumbers.idPn, id))
+            .returning()
+
+        res.status(200).json({
+            success: true,
+            data: deletedPartNumber[0]
+        })
+
+    } catch (error) {
+        console.log("Error in deletePartNumber function", error)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
 }

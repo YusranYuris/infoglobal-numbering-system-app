@@ -80,7 +80,7 @@ export const createDocument = async (req, res) => {
         });
     };
 
-    if (isSequenced) {
+    if (isSequenced === true) {
         const maxResult = await db
             .select({maxSeq: max(documents.sequence)})
             .from(documents)
