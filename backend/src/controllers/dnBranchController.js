@@ -6,6 +6,7 @@ import { dnBranches } from "../db/schema/dnBranches.js";
 import { asc, desc, eq } from "drizzle-orm";
 import { deleteFile } from "../utils/deleteFile.js";
 import { renameFile } from "../utils/renameFile.js";
+import { drawingNumbers } from "../db/schema/drawingNumbers.js";
 
 export const getAllBranch = async (req, res) => {
     try {
@@ -158,7 +159,9 @@ export const updateBranch = async (req, res) => {
             const pdfUrl = await uploadFile("drawing-number", pdfFile, formattedBranch[0].idBranch, description);
 
             updateData.pdfUrl = pdfUrl;
-        } else {
+        }
+
+        if (formattedBranch[0].pdfUrl) {
             // Rename nama file pada Supabase Storage Bucket dan ambil URL
             const pdfUrl = await renameFile("drawing-number" , formattedBranch[0].idBranch, formattedBranch[0].description, description)
 
@@ -170,6 +173,13 @@ export const updateBranch = async (req, res) => {
             .set(updateData)
             .where(eq(dnBranches.idBranch, id))
             .returning()
+        
+        if (!formattedBranch[0].group && !formattedBranch[0].subGroup && !formattedBranch[0].subSg) {
+            await db
+                .update(drawingNumbers)
+                .set({description: description})
+                .where(eq(drawingNumbers.idDn, formattedBranch[0].rootId))
+        }
 
         res.status(200).json({
             success: true,

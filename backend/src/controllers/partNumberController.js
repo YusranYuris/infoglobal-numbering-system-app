@@ -162,7 +162,9 @@ export const updatePartNumber = async (req, res) => {
 
             updateData.pdfUrl = pdfUrl;
 
-        } else {
+        }
+
+        if (formattedPartNumber[0].pdfUrl) {
             const pdfUrl = await renameFile("part-number", formattedPartNumber[0].idPn, formattedPartNumber[0].description, description)
 
             updateData.pdfUrl = pdfUrl

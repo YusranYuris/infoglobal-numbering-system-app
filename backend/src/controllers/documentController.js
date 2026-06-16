@@ -169,7 +169,9 @@ export const updateDocument = async (req, res) => {
             const pdfUrl = await uploadFile("document", pdfFile, formattedIdDoc[0].idDoc, description);
 
             updateData.pdfUrl = pdfUrl;
-        } else {
+        }
+
+        if (formattedIdDoc[0].pdfUrl) {
             // Rename nama file pada Supabase Storage Bucket dan ambil URL
             const pdfUrl = await renameFile("document", formattedIdDoc[0].idDoc, formattedIdDoc[0].description, description);
 
