@@ -1,5 +1,5 @@
 import express from "express";
-import { createDrawingNumber, getAllDrawingNumber, getDrawingNumber } from "../controllers/drawingNumberController.js"
+import { createDrawingNumber, deleteDrawingNumber, getAllDrawingNumber, getDrawingNumber } from "../controllers/drawingNumberController.js"
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -14,5 +14,8 @@ router.post("/", authenticate, createDrawingNumber)
 
 // Get Drawing Number
 router.get("/:id", authenticate, getDrawingNumber)
+
+// Delete Drawing Number
+router.delete("/:id", authenticate, deleteDrawingNumber)
 
 export default router;

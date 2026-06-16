@@ -134,3 +134,38 @@ export const createDrawingNumber = async (req, res) => {
         });
     };
 };
+
+export const deleteDrawingNumber = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const drawingNumber = await db
+            .select()
+            .from(drawingNumbers)
+            .where(eq(drawingNumbers.idDn, id))
+
+        if (drawingNumber.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Drawing Number not found"
+            })
+        };
+
+        const deletedPartNumber = await db
+            .delete(drawingNumbers)
+            .where(eq(drawingNumbers.idDn, id))
+            .returning()
+
+        res.status(200).json({
+            success: true,
+            data: deletedPartNumber[0]
+        })
+        
+    } catch (error) {
+        console.log("Error in deletePartNumber function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}
