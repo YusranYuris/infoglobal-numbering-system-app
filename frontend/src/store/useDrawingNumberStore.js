@@ -3,6 +3,8 @@ import toast from "react-hot-toast"
 import { create } from "zustand";
 
 export const useDrawingNumberStore = create((set, get) => ({
+    isDrawingNumberLoading: false,
+    isDnBranchLoading: false,
     loading: false,
     error: null,
 
@@ -84,7 +86,7 @@ export const useDrawingNumberStore = create((set, get) => ({
 
     addDrawingNumber: async (e) => {
         e.preventDefault();
-        set({loading: true})
+        set({isDrawingNumberLoading: true})
 
         try {
             const { dnFormData } = get();
@@ -107,7 +109,7 @@ export const useDrawingNumberStore = create((set, get) => ({
             console.log("Error in addDrawingNumber function")
             toast.error("Something went wrong")
         } finally {
-            set({loading: false})
+            set({isDrawingNumberLoading: false})
         }
     },
 
@@ -125,7 +127,7 @@ export const useDrawingNumberStore = create((set, get) => ({
 
     addDnBranch: async (e) => {
         e.preventDefault();
-        set({loading: true})
+        set({isDnBranchLoading: true})
 
         try {
             const { dnBranchFormData } = get();
@@ -150,7 +152,7 @@ export const useDrawingNumberStore = create((set, get) => ({
             console.log("Error in addDnBranch function")
             toast.error("Something went wrong")
         } finally {
-            set({loading: false})
+            set({isDnBranchLoading: false})
         }
     },
 

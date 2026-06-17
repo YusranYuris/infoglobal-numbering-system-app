@@ -11,6 +11,8 @@ const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
 
   const { 
+    isDrawingNumberLoading,
+    isDnBranchLoading,
     loading, 
     fetchDrawingNumbers, 
     fetchDnBranches, 
@@ -189,7 +191,7 @@ const DrawingNumberPage = () => {
                   disabled={!dnFormData.drawingKind || !dnFormData.kindCode || !dnFormData.categoryCode || !dnFormData.functionCode || !dnFormData.designationCode || !dnFormData.description || !dnFormData.createdBy}
                   className={styles.addButton}
                 >
-                  {loading ? (
+                  {isDrawingNumberLoading ? (
                     <span className={styles.spinner}></span>
                   ) : (
                     <>
@@ -287,7 +289,7 @@ const DrawingNumberPage = () => {
                   disabled={!dnBranchFormData.rootId || !dnBranchFormData.group ||  !dnBranchFormData.description || !dnBranchFormData.createdBy}
                   className={styles.addButton}
                 >
-                  {loading ? (
+                  {isDnBranchLoading ? (
                     <span className={styles.spinner}></span>
                   ) : (
                     <>

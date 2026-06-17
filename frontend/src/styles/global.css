@@ -5,6 +5,11 @@
     /* outline: 1px solid red; */
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 html {
     font-size: 62.5%;
 }
