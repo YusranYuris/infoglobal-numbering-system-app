@@ -73,7 +73,7 @@ export const createDocument = async (req, res) => {
 
     const pdfFile = req.file;
 
-    if (!productAbbr || !docKind || !department || !companyAbbr || !year || !description) {
+    if (!productAbbr || !docKind || department === null || !companyAbbr || !year || !description) {
         return res.status(400).json({
             success: false,
             message: "All fields are required"

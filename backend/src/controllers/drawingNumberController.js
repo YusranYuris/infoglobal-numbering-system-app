@@ -87,6 +87,10 @@ export const createDrawingNumber = async (req, res) => {
 
     const formattedIdDn = `${drawingKind}-${kindCode + categoryCode + functionCode}-${designationCode + formattedSequence}`;
 
+    if (sequence === "") {
+        sequence = null;
+    }
+    
     try {
         const newDrawingNumber = await db
             .insert(drawingNumbers)
