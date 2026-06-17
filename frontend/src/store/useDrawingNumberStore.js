@@ -158,6 +158,7 @@ export const useDrawingNumberStore = create((set, get) => ({
         set({loading: true});
         try {
             const response = await api.get("/dn-branches")
+
             set({dnBranches: response.data.data, error: null})
         } catch (error) {
             set({error: "Something went wrong", dnBranches: []})

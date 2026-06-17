@@ -222,15 +222,47 @@
 .tableContainer {
   border: 3px solid #1F1A17;
   border-radius: 10px;
-  overflow: hidden;
   background-color: #F4F4F4;
   filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.25));
+
+  /* SCROLL TABLE */
+  max-height: 59.9rem;
+  overflow-y: auto;
+}
+
+/* CUSTOMIZE SCROLLBAR */
+.tableContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* 2. Atur area rel/jalur tempat scrollbar berjalan (Track) */
+.tableContainer::-webkit-scrollbar-track {
+  background: #ABABAB; /* Warna latar belakang jalur scrollbar */
+  border-radius: 10px;
+}
+
+/* 3. Atur batang scrollbar yang digeser (Thumb) */
+.tableContainer::-webkit-scrollbar-thumb {
+  background: #c1c1c1; /* Warna batang scrollbar */
+  border-radius: 10px; /* Membuat ujung batang menjadi melengkung/bulat */
+}
+
+/* 4. Efek saat batang scrollbar diarahkan kursor (Hover) */
+.tableContainer::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8; /* Warna menjadi sedikit lebih gelap saat di-hover */
 }
 
 .customTable {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+}
+
+.customTable thead th {
+  position: sticky;
+  top: 0;
+  background-color: #E5E5E5;
+  z-index: 1;
 }
 
 .customTable thead {
@@ -330,7 +362,7 @@
   color: #3a3434;
   margin: 0 auto;
   width: max-content;
-  padding: 0.7rem 0.7rem;
+  padding: 0.74rem 0.7rem;
   border-radius: 10px;
 }
 
