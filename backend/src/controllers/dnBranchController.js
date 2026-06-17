@@ -7,6 +7,7 @@ import { asc, desc, eq } from "drizzle-orm";
 import { deleteFile } from "../utils/deleteFile.js";
 import { renameFile } from "../utils/renameFile.js";
 import { drawingNumbers } from "../db/schema/drawingNumbers.js";
+import { buildTree } from "../utils/buildTree.js";
 
 export const getAllBranch = async (req, res) => {
     try {
@@ -33,6 +34,38 @@ export const getAllBranch = async (req, res) => {
         });
     };
 };
+
+export const getTree = async (req, res) => {
+    const { rootId } = req.params;
+
+    try {
+        const family = await db
+            .select()
+            .from(dnBranches)
+            .where(eq(dnBranches.rootId, rootId))
+        
+        if (!family || family.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `Data branch dengan rootId ${id} tidak ditemukan.`
+            });
+            }
+        
+        const tree = buildTree(family);
+
+        res.status(200).json({
+            success: true,
+            data: tree
+        });
+
+    } catch (error) {
+        console.log("Error in getTree function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
 
 export const getBranch = async (req, res) => {
     const { id } = req.params;
