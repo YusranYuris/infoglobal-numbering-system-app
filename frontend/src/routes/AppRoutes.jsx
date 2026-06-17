@@ -10,6 +10,7 @@ import DrawingNumberPage from "../pages/DrawingNumberPage";
 import PartNumberPage from "../pages/PartNumberPage";
 import DocumentPage from "../pages/DocumentPage";
 import ProtectedRoute from "./ProtectedRoutes";
+import { Toaster } from "react-hot-toast";
 
 function AppRoutes() {
     return (
@@ -60,6 +61,8 @@ function AppRoutes() {
                 />
 
             </Routes>
+
+            <Toaster/>
         </BrowserRouter>
     );
 }

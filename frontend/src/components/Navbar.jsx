@@ -27,8 +27,7 @@ function Navbar() {
     );
 
     return (
-        <header>
-            <nav className={styles.navbar}>
+        <nav className={styles.navbar}>
                 <div>
                     <Link to={user?.role === "admin" ? "/dashboard" : "/drawing-number"} >
                         <img src={infoglobalLogo} alt="infoglobal-logo" className={styles.logoMd} />
@@ -41,12 +40,6 @@ function Navbar() {
                             <li>
                                 <Link to="/dashboard" className={pathname === "/dashboard" ? styles.navActive : {}} >
                                     Dashboard
-                                </Link>
-                            </li>
-                            
-                            <li>
-                                <Link to="/user" className={pathname === "/user" ? styles.navActive : {}} >
-                                    Users
                                 </Link>
                             </li>
                         </>
@@ -74,7 +67,6 @@ function Navbar() {
                 </ul>
                 <button className={styles.logoutButton} onClick={handleLogout}>Log Out</button>
             </nav>
-        </header>
     )
 }
 
