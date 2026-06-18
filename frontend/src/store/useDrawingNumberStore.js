@@ -7,9 +7,23 @@ export const useDrawingNumberStore = create((set, get) => ({
     isDnBranchLoading: false,
     loading: false,
     error: null,
+    selectedBranch: null,
+
+    isTreeModalOpen: false,
+    isEditModalOpen: false,
+    isDeleteModalOpen: false,
+
+    openTreeModal: (branch) => set({ isTreeModalOpen: true, selectedBranch: branch }),
+    openEditModal: (branch) => set({ isEditModalOpen: true, selectedBranch: branch }),
+    openDeleteModal: (branch) => set({ isDeleteModalOpen: true, selectedBranch: branch }),
+    
+    closeTreeModal: () => set({ isTreeModalOpen: false, selectedBranch: null }),
+    closeEditModal: () => set({ isEditModalOpen: false, selectedBranch: null }),
+    closeDeleteModal: () => set({ isDeleteModalOpen: false, selectedBranch: null }),
 
     drawingNumbers: [],
     dnBranches: [],
+    dnFamily: {},
 
     dnFormData: {
         drawingKind: "",
@@ -113,7 +127,7 @@ export const useDrawingNumberStore = create((set, get) => ({
         }
     },
 
-    fetchDrawingNumbers: async (e) => {
+    fetchDrawingNumbers: async (    ) => {
         set({loading: true});
         try {
             const response = await api.get("/drawing-numbers")
@@ -156,7 +170,7 @@ export const useDrawingNumberStore = create((set, get) => ({
         }
     },
 
-    fetchDnBranches: async (e) => {
+    fetchDnBranches: async () => {
         set({loading: true});
         try {
             const response = await api.get("/dn-branches")
@@ -168,4 +182,14 @@ export const useDrawingNumberStore = create((set, get) => ({
             set({loading: false})
         }
     },
+
+    fetchTree: async (rootId) => {
+        try {
+            const response = await api.get(`/dn-branches/${rootId}/tree`)
+
+            set({dnFamily: response.data.data, error: null})
+        } catch (error) {
+            set({error: "Something went wrong", dnFamily: {}})
+        }
+    }
 }));

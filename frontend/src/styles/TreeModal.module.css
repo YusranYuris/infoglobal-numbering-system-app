@@ -1,0 +1,83 @@
+.nodeCard {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  display: inline-block;
+  min-width: 16rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nodeCardActive {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #007bff;
+  border: 1px solid #0056b3;
+  filter: drop-shadow(2px 2px 10px rgb(165, 194, 255));
+  display: inline-block;
+  min-width: 16rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nodeCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.titleActive {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.subtitleActive {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #fbf6f6;
+}
+
+/* TreeModal.module.css */
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6); /* Backdrop agak gelap transparan */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Memastikan melayang di atas navbar dan tabel */
+}
+
+.chartWrapper {
+  background-color: #f8fafc;
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow: auto; /* Agar bagan pohon bisa di-scroll jika terlalu lebar */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.chartWrapper ul:empty::before {
+  display: none !important;
+}

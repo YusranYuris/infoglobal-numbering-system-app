@@ -6,27 +6,45 @@ import { useDrawingNumberStore } from "../store/useDrawingNumberStore.js";
 import { DRAWING_KIND, KIND_CODE, CATEGORY_CODE, FUNCTION_CODE, DESIGNATION_CODE } from "../constants/mastersData.js";
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
+import TreeModal from "../components/TreeModal.jsx";
 
 const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
 
   const { 
+    selectedBranch,
+
     isDrawingNumberLoading,
     isDnBranchLoading,
     loading, 
+
     fetchDrawingNumbers, 
     fetchDnBranches, 
     addDrawingNumber,  
-    addDnBranch, 
+    addDnBranch,
+
     searchFilters,
     setSearchFilters,
     resetSearchFilters,
+
     drawingNumbers, 
     dnFormData,
     dnBranches,
     dnBranchFormData, 
     setDnFormData,
-    setDnBranchFormData, 
+    setDnBranchFormData,
+
+    isTreeModalOpen,
+    isEditModalOpen,
+    isDeleteModalOpen,
+
+    openTreeModal,
+    openEditModal,
+    openDeleteModal,
+    
+    closeTreeModal,
+    closeEditModal,
+    closeDeleteModal,
   } = useDrawingNumberStore()
 
   useEffect(() => {
@@ -417,7 +435,7 @@ const DrawingNumberPage = () => {
                   const isSubSg = branch.subSg != 0 && !isParent && !isGroup && !isSubGroup;
 
                   return (
-                    <tr key={branch.id}>
+                    <tr onClick={() => openTreeModal(branch)} key={branch.id}>
                       <td>{isParent ? branch.idBranch : ""}</td>
                       <td>{isGroup ? `➥ ${branch.idBranch}` : ""}</td>
                       <td>{isSubGroup ? `➥ ${branch.idBranch}` : ""}</td>
@@ -448,6 +466,12 @@ const DrawingNumberPage = () => {
         </div>
 
       </div>
+
+      <TreeModal
+        isTreeModalOpen={isTreeModalOpen}
+        selectedBranch={selectedBranch}
+        closeTreeModal={closeTreeModal}
+      />
     </div>
   )
 }
