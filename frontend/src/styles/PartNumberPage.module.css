@@ -1,3 +1,5 @@
+/* --------- FULL PAGE STYLES --------- */
+
 .pageBody {
     background-color: #ECECEC;
     
@@ -12,5 +14,376 @@
 .container {
     max-width: 1300px;
     width: 90%;
-    margin: 2rem auto;
+    margin: 0 auto 10rem;
+}
+
+/* LOADING SPINNING ICON */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* --------- SECTIONS --------- */
+
+/* ----- TITLE ----- */
+.titleSection {
+    font-size: 3rem;
+    letter-spacing: -4%;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 7rem;
+}
+
+/* ----- FORM INPUT ----- */
+.formSection {
+    max-width: 1400px;
+    width: 100%;
+    margin-bottom: 6rem;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+    column-gap: 2.5rem;
+    align-items: start;
+}
+
+.formInput {
+    padding: 2.5rem;
+    border: 3px solid #1F1A17;
+    border-radius: 25px;
+    background-color: #F4F4F4;
+    filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.25));
+}
+
+.formInput h2 {
+    margin-bottom: 4rem;
+    font-size: 2.2rem;
+}
+
+.formInput label, .formInput select, .formInput input {
+    width: 100%;
+    text-align: left;
+}
+
+.formLabel {
+    font-size: 1.9rem;
+    font-weight: 500;
+    letter-spacing: -1.7%;
+    display: block;
+    margin-bottom: 1.1rem;
+}
+
+.formInput select, .formInput input {
+    border: 1.5px solid #A6A6A6;
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-bottom: 3.3rem;
+
+    font-size: 1.9rem;
+    font-weight: 400;
+
+    background-color: #F4F4F4;
+}
+
+.formInput input::placeholder, .selectPlaceholder {
+    color: solid #A6A6A6;
+}
+
+.addButton {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #F4F4F4;
+    text-align: center;
+
+    padding: 1.5rem 11rem;
+    margin: 1rem auto 0;
+    border-radius: 25px;
+
+    background-color: #1F1A17;
+    filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.25));
+
+    display: block;
+}
+
+.uploadBox {
+    letter-spacing: -1.7%;
+    display: block;
+
+    height: 17rem;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 4.3rem;
+
+    font-size: 1.9rem;
+    font-weight: 400;
+    color: solid #A6A6A6;
+}
+
+.uploadBox:hover {
+    border-color: #2563eb;
+}
+
+/* ----- FORM SEARCH ----- */
+.formSearch {
+    padding: 2.5rem;
+    border: 3px solid #1F1A17;
+    border-radius: 25px;
+    background-color: #F4F4F4;
+    filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.25));
+    margin-bottom: 3rem;
+}
+
+.formSearch h2 {
+    margin-bottom: 4rem;
+    font-size: 2.2rem;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: auto auto;
+    gap: 20px; 
+    align-items: flex-end;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+    font-size: 1.9rem;
+    font-weight: 500;
+    letter-spacing: -1.7%;
+    display: block;
+    margin-bottom: 1.1rem;
+}
+
+.formGroup select, .formGroup input {
+    border: 2px solid #A6A6A6;
+    border-radius: 8px;
+    padding: 1.2rem;
+    width: 100%;
+
+    font-size: 1.9rem;
+    font-weight: 400;
+
+    background-color: #F4F4F4;
+}
+
+.formGroup input::placeholder {
+    color: solid #A6A6A6;
+}
+
+.resetBtnMiddle {
+   grid-column: 2;
+   grid-row: 2;
+}
+
+.resetButtonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.resetButton {
+  width: 60%;
+  margin: 0 auto;
+  padding: 10px;
+  border: 3px solid #1F1A17;
+  border-radius: 15px;
+  background-color: #F4F4F4;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 2.2rem;
+  color: #1F1A17;
+  text-align: center;
+  letter-spacing: -1.7%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+/* ----- DRAWING NUMBER TABLE ----- */
+.tableContainer {
+  border: 3px solid #1F1A17;
+  border-radius: 10px;
+  background-color: #F4F4F4;
+  filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.25));
+
+  /* SCROLL TABLE */
+  max-height: 59.9rem;
+  overflow-y: auto;
+}
+
+/* CUSTOMIZE SCROLLBAR */
+.tableContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* 2. Atur area rel/jalur tempat scrollbar berjalan (Track) */
+.tableContainer::-webkit-scrollbar-track {
+  background: #ABABAB; /* Warna latar belakang jalur scrollbar */
+  border-radius: 10px;
+}
+
+/* 3. Atur batang scrollbar yang digeser (Thumb) */
+.tableContainer::-webkit-scrollbar-thumb {
+  background: #c1c1c1; /* Warna batang scrollbar */
+  border-radius: 10px; /* Membuat ujung batang menjadi melengkung/bulat */
+}
+
+/* 4. Efek saat batang scrollbar diarahkan kursor (Hover) */
+.tableContainer::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8; /* Warna menjadi sedikit lebih gelap saat di-hover */
+}
+
+.customTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.customTable thead th {
+  position: sticky;
+  top: 0;
+  background-color: #E5E5E5;
+  z-index: 1;
+}
+
+.customTable thead {
+  background-color: #E5E5E5;
+  border-bottom: 2px solid #ABABAB;
+}
+
+.customTable th {
+  padding: 1.6rem 2rem;
+  font-weight: 600;
+  color: #1F1A17;
+  font-size: 1.8rem;
+}
+
+.customTable td {
+  padding: 1.2rem 2rem;
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #1F1A17;
+  vertical-align: middle;
+}
+
+.customTable tbody tr {
+  border-bottom: 2px solid #ABABAB;
+  cursor: pointer;
+}
+
+.customTable tbody tr:hover {
+  transition:  all 0.5s ease;  
+  background-color: rgba(77, 129, 196, 0.13);
+}
+
+.customTable tbody tr:last-child {
+  border-bottom: none;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.actionsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btnEdit {
+  background-color: #F4F4F4;
+  color: #5C84B7;
+  border: 3px solid #5C84B7;
+  border-radius: 20px;
+  filter: drop-shadow(1px 2px 4px rgba(0, 0, 0, 0.25));
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btnEdit svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.btnEdit:hover {
+  color: #F4F4F4;
+  background-color: #5C84B7;
+}
+
+.btnDelete {
+  background-color: #F4F4F4;
+  color: #780606;
+  border: 3px solid #780606;
+  border-radius: 20px;
+  filter: drop-shadow(1px 2px 4px rgba(0, 0, 0, 0.25));
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btnDelete svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.btnDelete:hover {
+  color: #F4F4F4;
+  background-color: #780606;
+}
+
+.attachmentAvail {
+  color: #3a3434;
+  margin: 0 auto;
+  width: max-content;
+  padding: 0.74rem 0.7rem;
+  border-radius: 10px;
+}
+
+.attachmentAvail:hover {
+  transition: all 0.3s ease-out;  
+  color: #B80000;
+  filter: drop-shadow(1px 1px 10px rgba(255, 0, 0, 0.45));
+}
+
+.attachmentAvail svg, .attachmentNull svg {
+  width: 2.5rem;
+}
+
+.attachmentNull {
+  color: #A6A6A6;
+  border: 2.5px dashed #A6A6A6;
+  margin: 0 auto;
+  width: max-content;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
 }

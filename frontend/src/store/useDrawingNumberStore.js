@@ -117,7 +117,7 @@ export const useDrawingNumberStore = create((set, get) => ({
 
             get().resetDnFormData();
 
-            toast.success(`Drawing Number: ${response.data.data.branch.idBranch} added successfully`)
+            toast.success(`Drawing Number: ${response.data.data.branch.idBranch} successfully added`)
 
         } catch (error) {
             console.log("Error in addDrawingNumber function")
@@ -127,7 +127,7 @@ export const useDrawingNumberStore = create((set, get) => ({
         }
     },
 
-    fetchDrawingNumbers: async (    ) => {
+    fetchDrawingNumbers: async () => {
         set({loading: true});
         try {
             const response = await api.get("/drawing-numbers")

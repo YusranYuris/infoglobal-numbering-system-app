@@ -1,4 +1,4 @@
-export const buildTree = (flatData) => {
+export const buildDnTree = (flatData) => {
     const map = {};
     let root = null;
 

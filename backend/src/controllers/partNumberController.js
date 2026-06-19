@@ -64,8 +64,6 @@ export const createPartNumber = async (req, res) => {
     
     const pdfFile = req.file;
 
-    console.log(pdfFile)
-
     if (!kindCode || !categoryCode || !functionCode || !designationCode || !description || !createdBy) {
         return res.status(400).json({
             success: false,
@@ -73,7 +71,8 @@ export const createPartNumber = async (req, res) => {
         });
     };
 
-    if (isSequenced === true) {
+    if (isSequenced === 'true') {
+        console.log(isSequenced)
         const maxResult = await db
             .select({maxSeq: max(partNumbers.sequence)})
             .from(partNumbers)
@@ -83,15 +82,20 @@ export const createPartNumber = async (req, res) => {
                     eq(partNumbers.categoryCode, categoryCode),
                     eq(partNumbers.functionCode, functionCode),
                     eq(partNumbers.designationCode, designationCode),
+                    eq(partNumbers.isSequenced, true)
                 )
             );
         
         sequence = (maxResult[0].maxSeq || 0) + 1;
     };
+
+    console.log(sequence)
     
     const formattedSequence = String(sequence).padStart(3, "0");
 
     const formattedIdPn = `${kindCode + categoryCode + functionCode}-${designationCode + formattedSequence}`;
+
+    
 
     try {
         // Mengambil file PDF

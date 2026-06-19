@@ -7,7 +7,7 @@ import { asc, desc, eq } from "drizzle-orm";
 import { deleteFile } from "../utils/deleteFile.js";
 import { renameFile } from "../utils/renameFile.js";
 import { drawingNumbers } from "../db/schema/drawingNumbers.js";
-import { buildTree } from "../utils/buildTree.js";
+import { buildDnTree } from "../utils/buildDnTree.js";
 
 export const getAllBranch = async (req, res) => {
     try {
@@ -49,9 +49,9 @@ export const getTree = async (req, res) => {
                 success: false,
                 message: `Data branch dengan rootId ${id} tidak ditemukan.`
             });
-            }
+        }
         
-        const tree = buildTree(family);
+        const tree = buildDnTree(family);
 
         res.status(200).json({
             success: true,
