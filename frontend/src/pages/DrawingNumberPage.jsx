@@ -6,7 +6,7 @@ import { useDrawingNumberStore } from "../store/useDrawingNumberStore.js";
 import { DRAWING_KIND, KIND_CODE, CATEGORY_CODE, FUNCTION_CODE, DESIGNATION_CODE } from "../constants/mastersData.js";
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
-import TreeModal from "../components/TreeModal.jsx";
+import DnTreeModal from "../components/DnTreeModal.jsx";
 
 const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -467,7 +467,7 @@ const DrawingNumberPage = () => {
 
       </div>
 
-      <TreeModal
+      <DnTreeModal
         isTreeModalOpen={isTreeModalOpen}
         selectedBranch={selectedBranch}
         closeTreeModal={closeTreeModal}

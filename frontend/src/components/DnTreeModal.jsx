@@ -3,7 +3,7 @@ import { Tree, TreeNode } from "react-organizational-chart";
 import styles from "../styles/TreeModal.module.css";
 import { useDrawingNumberStore } from "../store/useDrawingNumberStore";
 
-export default function TreeModal({ isTreeModalOpen, selectedBranch, closeTreeModal }) {
+export default function DnTreeModal({ isTreeModalOpen, selectedBranch, closeTreeModal }) {
     if (!isTreeModalOpen) return null;
 
     const { dnFamily, fetchTree } = useDrawingNumberStore();
@@ -16,6 +16,7 @@ export default function TreeModal({ isTreeModalOpen, selectedBranch, closeTreeMo
         }
     }, [fetchTree]);
 
+    // Component Node Card
     const NodeCard = ({ idBranch, description }) => (
         <div className={selectedBranch.idBranch == idBranch ? styles.nodeCardActive : styles.nodeCard}>
             <h4 className={selectedBranch.idBranch == idBranch ? styles.titleActive : styles.title}>{description || "No Title"}</h4>
@@ -23,7 +24,7 @@ export default function TreeModal({ isTreeModalOpen, selectedBranch, closeTreeMo
         </div>
     );
 
-    // PERBAIKAN 2: Pindahkan juga fungsi rekursif ke luar komponen utama.
+    // Fungsi untuk render child dst.
     const RenderChild = ({ listChild }) => {
         if (!listChild || listChild.length === 0) return null;
 
