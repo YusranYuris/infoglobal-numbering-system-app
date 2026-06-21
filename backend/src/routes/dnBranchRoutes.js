@@ -5,6 +5,7 @@ import {
     getAllBranch,
     getBranch,
     getTree,
+    previewDelete,
     updateBranch
 } from "../controllers/dnBranchController.js"
 import { authenticate } from "../middleware/authMiddleware.js";
@@ -22,6 +23,9 @@ router.post("/", authenticate, upload.single("pdf"), createBranch);
 
 // Get Tree
 router.get("/:rootId/tree", authenticate, getTree)
+
+// Preview Delete
+router.get("/:id/preview-delete", authenticate, previewDelete)
 
 // Get Branch
 router.get("/:id",  authenticate, getBranch);

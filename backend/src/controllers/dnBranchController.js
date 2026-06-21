@@ -3,7 +3,7 @@ import { db } from "../db/index.js";
 import { uploadFile } from "../utils/uploadFile.js";
 
 import { dnBranches } from "../db/schema/dnBranches.js";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { deleteFile } from "../utils/deleteFile.js";
 import { renameFile } from "../utils/renameFile.js";
 import { drawingNumbers } from "../db/schema/drawingNumbers.js";
@@ -33,61 +33,6 @@ export const getAllBranch = async (req, res) => {
             message: error.message
         });
     };
-};
-
-export const getTree = async (req, res) => {
-    const { rootId } = req.params;
-
-    try {
-        const family = await db
-            .select()
-            .from(dnBranches)
-            .where(eq(dnBranches.rootId, rootId))
-        
-        if (!family || family.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: `Data branch dengan rootId ${id} tidak ditemukan.`
-            });
-        }
-        
-        const tree = buildDnTree(family);
-
-        res.status(200).json({
-            success: true,
-            data: tree
-        });
-
-    } catch (error) {
-        console.log("Error in getTree function", error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-}
-
-export const getBranch = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const branch = await db
-            .select()
-            .from(dnBranches)
-            .where(eq(dnBranches.idBranch, id));
-        
-        res.status(200).json({
-            success: true,
-            data: branch
-        });
-
-    } catch (error) {
-        console.log("Error in getBranch function", error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
 };
 
 export const createBranch = async (req, res) => {
@@ -162,6 +107,139 @@ export const createBranch = async (req, res) => {
     };
 };
 
+export const getTree = async (req, res) => {
+    const { rootId } = req.params;
+
+    try {
+        const family = await db
+            .select()
+            .from(dnBranches)
+            .where(eq(dnBranches.rootId, rootId))
+        
+        if (!family || family.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `Data branch dengan rootId ${id} tidak ditemukan.`
+            });
+        }
+        
+        const tree = buildDnTree(family);
+
+        res.status(200).json({
+            success: true,
+            data: tree
+        });
+
+    } catch (error) {
+        console.log("Error in getTree function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const previewDelete = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const dnBranch = await db
+            .select()
+            .from(dnBranches)
+            .where(eq(dnBranches.idBranch, id))
+        
+        if (!dnBranch.length) {
+            return res.status(404).json({
+                success: false,
+                message: "Branch Not Found"
+            });
+        };
+
+        let affectedBranch = []
+
+        if (dnBranch[0].group === 0) {
+            affectedBranch = await db
+                .select()
+                .from(dnBranches)
+                .where(eq(dnBranches.rootId, dnBranch[0].rootId))
+                .orderBy(
+                    asc(dnBranches.group),
+                    asc(dnBranches.subGroup),
+                    asc(dnBranches.subSg)
+                );
+
+        } else if (dnBranch[0].subGroup === 0) {
+            affectedBranch = await db
+                .select()
+                .from(dnBranches)
+                .where(and(
+                    eq(dnBranches.rootId, dnBranch[0].rootId),
+                    eq(dnBranches.group, dnBranch[0].group)
+                ))
+                .orderBy(
+                    asc(dnBranches.group),
+                    asc(dnBranches.subGroup),
+                    asc(dnBranches.subSg)
+                );
+                
+        } else if (dnBranch[0].subSg === 0) {
+            affectedBranch = await db
+                .select()
+                .from(dnBranches)
+                .where(and(
+                    eq(dnBranches.rootId, dnBranch[0].rootId),
+                    eq(dnBranches.group, dnBranch[0].group),
+                    eq(dnBranches.subGroup, dnBranch[0].subGroup),
+                ))
+                .orderBy(
+                    asc(dnBranches.group),
+                    asc(dnBranches.subGroup),
+                    asc(dnBranches.subSg)
+                );
+        };
+
+        return res.json({
+            success: true,
+            data: {
+                idBranch: dnBranch[0].idBranch,
+                description: dnBranch[0].description,
+                affectedBranch: affectedBranch.length,
+                previewBranches: affectedBranch.slice(1, 6)
+            }
+        })
+
+    } catch (error) {
+        console.log("Error in previewDelete function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+export const getBranch = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const branch = await db
+            .select()
+            .from(dnBranches)
+            .where(eq(dnBranches.idBranch, id));
+        
+        res.status(200).json({
+            success: true,
+            data: branch
+        });
+
+    } catch (error) {
+        console.log("Error in getBranch function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 // Untuk update Description dan File PDF pada Drawing Number Branch
 export const updateBranch = async (req, res) => {
     const { id } = req.params;
@@ -233,28 +311,77 @@ export const deleteBranch = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const branch = await db
+        const dnBranch = await db
             .select()
             .from(dnBranches)
             .where(eq(dnBranches.idBranch, id))
         
-        if (branch.length === 0) {
+        if (dnBranch.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "Branch not found"
             });
         };
 
-        await deleteFile(branch[0].pdfUrl)
+        let affectedBranch = []
 
-        const deletedBranch = await db
+        if (dnBranch[0].group === 0) {
+            affectedBranch = await db
+                .select()
+                .from(dnBranches)
+                .where(eq(dnBranches.rootId, dnBranch[0].rootId))
+                .orderBy(
+                    asc(dnBranches.group),
+                    asc(dnBranches.subGroup),
+                    asc(dnBranches.subSg)
+                );
+
+        } else if (dnBranch[0].subGroup === 0) {
+            affectedBranch = await db
+                .select()
+                .from(dnBranches)
+                .where(and(
+                    eq(dnBranches.rootId, dnBranch[0].rootId),
+                    eq(dnBranches.group, dnBranch[0].group)
+                ))
+                .orderBy(
+                    asc(dnBranches.group),
+                    asc(dnBranches.subGroup),
+                    asc(dnBranches.subSg)
+                );
+                
+        } else if (dnBranch[0].subSg === 0) {
+            affectedBranch = await db
+                .select()
+                .from(dnBranches)
+                .where(and(
+                    eq(dnBranches.rootId, dnBranch[0].rootId),
+                    eq(dnBranches.group, dnBranch[0].group),
+                    eq(dnBranches.subGroup, dnBranch[0].subGroup),
+                ))
+                .orderBy(
+                    asc(dnBranches.group),
+                    asc(dnBranches.subGroup),
+                    asc(dnBranches.subSg)
+                );
+        };
+
+        for (const branch of affectedBranch) {
+            await deleteFile(branch.pdfUrl)
+        };
+
+        const branchesToDelete = affectedBranch.map(
+            branches => branches.idBranch
+        );
+
+        const deletedBranches = await db
             .delete(dnBranches)
-            .where(eq(dnBranches.idBranch, id))
+            .where(inArray(dnBranches.idBranch, branchesToDelete))
             .returning()
 
         res.status(200).json({
             success: true,
-            data: deletedBranch[0]
+            data: deletedBranches
         })
 
     } catch (error) {
