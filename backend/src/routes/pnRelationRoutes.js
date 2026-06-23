@@ -3,7 +3,8 @@ import {
     createPnRelation, 
     deletePnRelation, 
     getPnForest,
-    getTree, 
+    getTree,
+    previewDeletePn, 
 } from "../controllers/pnRelationController.js"
 import { authenticate } from "../middleware/authMiddleware.js";
 
@@ -17,7 +18,11 @@ router.post("/", authenticate, createPnRelation)
 // Get PN Relation Structure
 router.get("/", authenticate, getPnForest)
 
+// Get PN Relation Tree 
 router.get("/:rootId/tree", authenticate, getTree)
+
+// Get PN Preview Delete
+router.get("/:idRelations/preview-delete", authenticate, previewDeletePn)
 
 // Delete PN Relation
 router.delete("/:id", authenticate, deletePnRelation)

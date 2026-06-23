@@ -1,9 +1,10 @@
 import { db } from "../db/index.js";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { pnRelations } from "../db/schema/pnRelations.js";
 import { buildPnTree } from "../utils/buildPnTree.js";
 import { partNumbers } from "../db/schema/partNumbers.js";
 import { flattenTreeData } from "../utils/flattenTree.js";
+import { findNode } from "../utils/findNode.js";
 
 export const getPnForest = async (req, res) => {
     try {
@@ -93,8 +94,6 @@ export const getTree = async (req, res) => {
                 pnCode: pnRelations.pnCode,
                 hierarchy: pnRelations.hierarchy,
                 description: partNumbers.description,
-                createdBy: partNumbers.createdBy,
-                pdfUrl: partNumbers.pdfUrl,
             })
             .from(pnRelations)
             .where(eq(pnRelations.rootId, rootId))
@@ -125,6 +124,64 @@ export const getTree = async (req, res) => {
     }
     
 };
+
+export const previewDeletePn = async (req, res) => {
+    const { idRelations } = req.params;
+
+    try {
+        const pnRoot = await db
+            .select({
+                rootId: pnRelations.rootId,
+                parentId: pnRelations.parentId,
+                pnCode: pnRelations.pnCode,
+                hierarchy: pnRelations.hierarchy,
+                description: partNumbers.description,
+            })
+            .from(pnRelations)
+            .where(eq(pnRelations.idRelations, idRelations))
+            .leftJoin(
+                partNumbers,
+                eq(pnRelations.pnCode, partNumbers.idPn)
+            );
+
+        const pnFamily = await db
+            .select()
+            .from(pnRelations)  
+            .where(eq(pnRelations.rootId, pnRoot[0].rootId)) 
+        
+        console.log(pnFamily)
+
+        if (!pnFamily || pnFamily.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `Data branch tidak ditemukan.`
+            });
+        };
+
+        const tree = buildPnTree(pnFamily);
+
+        const subFamily = findNode(tree[0], pnRoot[0].pnCode);
+
+        const affectedPn = flattenTreeData([subFamily]);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                pnCode: pnRoot[0].pnCode,
+                description: pnRoot[0].description,
+                affectedPn: affectedPn.length,
+                previewPn: affectedPn.slice(1, 6)
+            }
+        })
+
+    } catch (error) {
+        console.log("Error in previewDeletePn function", error)
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
 
 export const deletePnRelation = async (req, res) => {
     const { id } = req.params;

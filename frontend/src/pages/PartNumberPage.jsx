@@ -217,7 +217,7 @@ const PartNumberPage = () => {
               </form>
             </div>
 
-            {/* DRAWING NUMBER BRANCH GENERATOR */}
+            {/* PART NUMBER RELATION GENERATOR */}
             <div className={styles.formInput}>
               <h2>Part Number Relation Generator</h2>
 

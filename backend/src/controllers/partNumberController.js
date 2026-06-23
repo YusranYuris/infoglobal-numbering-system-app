@@ -26,29 +26,6 @@ export const getAllPartNumbers = async (req, res) => {
     };
 };
 
-export const getPartNumber = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const partNumber = await db
-            .select()
-            .from(partNumbers)
-            .where(eq(partNumbers.idPn, id))
-        
-        res.status(200).json({
-            success: true,
-            data: partNumber
-        })
-
-    } catch (error) {
-        console.log("Error in getPartNumber function", error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-}
-
 export const createPartNumber = async (req, res) => {
     const {
         kindCode,
@@ -133,6 +110,29 @@ export const createPartNumber = async (req, res) => {
             message: error.message
         });
     };
+};
+
+export const getPartNumber = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const partNumber = await db
+            .select()
+            .from(partNumbers)
+            .where(eq(partNumbers.idPn, id))
+        
+        res.status(200).json({
+            success: true,
+            data: partNumber
+        })
+
+    } catch (error) {
+        console.log("Error in getPartNumber function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 }
 
 // Untuk update Description dan File PDF pada Part Number

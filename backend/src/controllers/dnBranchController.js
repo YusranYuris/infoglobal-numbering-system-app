@@ -139,7 +139,7 @@ export const getTree = async (req, res) => {
     }
 };
 
-export const previewDelete = async (req, res) => {
+export const previewDeleteBranch = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -198,7 +198,7 @@ export const previewDelete = async (req, res) => {
                 );
         };
 
-        return res.json({
+        return res.status(200).json({
             success: true,
             data: {
                 idBranch: dnBranch[0].idBranch,
@@ -209,7 +209,7 @@ export const previewDelete = async (req, res) => {
         })
 
     } catch (error) {
-        console.log("Error in previewDelete function", error);
+        console.log("Error in previewDeleteBranch function", error);
         res.status(500).json({
             success: false,
             message: error.message
