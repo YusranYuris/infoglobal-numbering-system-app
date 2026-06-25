@@ -20,7 +20,7 @@ export const KIND_CODE = [
 export const CATEGORY_CODE = [
     { id: "M", desc: "Military"},
     { id: "MC", desc: "Military and Civilians"},
-    { id: "C", desc: "Marines"},
+    { id: "C", desc: "Civilians"},
 ];
 
 export const FUNCTION_CODE = [

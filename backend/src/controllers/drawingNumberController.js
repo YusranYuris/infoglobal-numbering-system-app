@@ -155,14 +155,14 @@ export const deleteDrawingNumber = async (req, res) => {
             })
         };
 
-        const deletedPartNumber = await db
+        const deletedDrawingNumber = await db
             .delete(drawingNumbers)
             .where(eq(drawingNumbers.idDn, id))
             .returning()
 
         res.status(200).json({
             success: true,
-            data: deletedPartNumber[0]
+            data: deletedDrawingNumber[0]
         })
         
     } catch (error) {

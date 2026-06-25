@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { Tree, TreeNode } from "react-organizational-chart";
-import styles from "../styles/TreeModal.module.css";
-import { usePartNumberStore } from "../store/usePartNumberStore";
+import styles from "../../styles/TreeModal.module.css";
+import { useDrawingNumberStore } from "../../store/useDrawingNumberStore";
 
-export default function PnTreeModal({ isTreeModalOpen, selectedPart, closeTreeModal }) {
+export default function DnTreeModal({ isTreeModalOpen, selectedBranch, closeTreeModal }) {
     if (!isTreeModalOpen) return null;
 
-    const { pnFamily, fetchTree } = usePartNumberStore();
+    const { dnFamily, fetchTree } = useDrawingNumberStore();
 
-    const currentRootId = selectedPart?.rootId;
+    const currentRootId = selectedBranch?.rootId;
 
     useEffect(() => {
         if (currentRootId) {
@@ -16,14 +16,15 @@ export default function PnTreeModal({ isTreeModalOpen, selectedPart, closeTreeMo
         }
     }, [fetchTree]);
 
-    const NodeCard = ({ pnCode, description }) => (
-        <div className={selectedPart.pnCode == pnCode ? styles.nodeCardActive : styles.nodeCard}>
-            <h4 className={selectedPart.pnCode == pnCode ? styles.titleActive : styles.title}>{description || "No Title"}</h4>
-            <p className={selectedPart.pnCode == pnCode ? styles.subtitleActive : styles.subtitle}>{pnCode || "No ID"}</p>
+    // Component Node Card
+    const NodeCard = ({ idBranch, description }) => (
+        <div className={selectedBranch.idBranch == idBranch ? styles.nodeCardActive : styles.nodeCard}>
+            <h4 className={selectedBranch.idBranch == idBranch ? styles.titleActive : styles.title}>{description || "No Title"}</h4>
+            <p className={selectedBranch.idBranch == idBranch ? styles.subtitleActive : styles.subtitle}>{idBranch || "No ID"}</p>
         </div>
     );
 
-    // PERBAIKAN 2: Pindahkan juga fungsi rekursif ke luar komponen utama.
+    // Fungsi untuk render child dst.
     const RenderChild = ({ listChild }) => {
         if (!listChild || listChild.length === 0) return null;
 
@@ -32,15 +33,15 @@ export default function PnTreeModal({ isTreeModalOpen, selectedPart, closeTreeMo
 
             return(
                 <TreeNode 
-                    key={node.pnCode} 
-                    label={<NodeCard pnCode={node.pnCode} description={node.description} />}
+                    key={node.idBranch} 
+                    label={<NodeCard idBranch={node.idBranch} description={node.description} />}
                 >
                     {hasChildren && <RenderChild listChild={node.child} />}
                 </TreeNode>
         )});
     };
 
-    if (!pnFamily || !pnFamily.pnCode) {
+    if (!dnFamily || !dnFamily.idBranch) {
         return (
             <div className={styles.container}>
                 <div className={styles.modalContent}>
@@ -59,9 +60,9 @@ export default function PnTreeModal({ isTreeModalOpen, selectedPart, closeTreeMo
                     lineWidth={'2px'}
                     lineColor={'#cbd5e1'}
                     lineBorderRadius={'8px'}
-                    label={<NodeCard pnCode={pnFamily.pnCode} description={pnFamily.description} />}
+                    label={<NodeCard idBranch={dnFamily.idBranch} description={dnFamily.description} />}
                 >
-                    <RenderChild listChild={pnFamily.child} />
+                    <RenderChild listChild={dnFamily.child} />
                 </Tree>
             </div>
         </div>

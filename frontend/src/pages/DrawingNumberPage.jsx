@@ -6,7 +6,8 @@ import { useDrawingNumberStore } from "../store/useDrawingNumberStore.js";
 import { DRAWING_KIND, KIND_CODE, CATEGORY_CODE, FUNCTION_CODE, DESIGNATION_CODE } from "../constants/mastersData.js";
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
-import DnTreeModal from "../components/DnTreeModal.jsx";
+import DnTreeModal from "../components/tree-modal/DnTreeModal.jsx";
+import DnDeleteModal from "../components/delete-modal/DnDeleteModal.jsx";
 
 const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -435,12 +436,12 @@ const DrawingNumberPage = () => {
                   const isSubSg = branch.subSg != 0 && !isParent && !isGroup && !isSubGroup;
 
                   return (
-                    <tr onClick={() => openTreeModal(branch)} key={branch.id}>
-                      <td>{isParent ? branch.idBranch : ""}</td>
-                      <td>{isGroup ? `➥ ${branch.idBranch}` : ""}</td>
-                      <td>{isSubGroup ? `➥ ${branch.idBranch}` : ""}</td>
-                      <td>{isSubSg ? `➥ ${branch.idBranch}` : ""}</td>
-                      <td>{branch.description}</td>
+                    <tr>
+                      <td onClick={() => openTreeModal(branch)} key={branch.id}>{isParent ? branch.idBranch : ""}</td>
+                      <td onClick={() => openTreeModal(branch)} key={branch.id}>{isGroup ? `➥ ${branch.idBranch}` : ""}</td>
+                      <td onClick={() => openTreeModal(branch)} key={branch.id}>{isSubGroup ? `➥ ${branch.idBranch}` : ""}</td>
+                      <td onClick={() => openTreeModal(branch)} key={branch.id}>{isSubSg ? `➥ ${branch.idBranch}` : ""}</td>
+                      <td onClick={() => openTreeModal(branch)} key={branch.id}>{branch.description}</td>
                       <td>
                         <div className={branch.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
                             <FileText className={styles.fileIcon} />
@@ -451,7 +452,7 @@ const DrawingNumberPage = () => {
                           <button className={styles.btnEdit}>
                             <SquarePen />
                           </button>
-                          <button className={styles.btnDelete}>
+                          <button onClick={() => openDeleteModal(branch)} key={branch.id} className={styles.btnDelete}>
                             <Trash2 />
                           </button>
                         </div>
@@ -471,6 +472,12 @@ const DrawingNumberPage = () => {
         isTreeModalOpen={isTreeModalOpen}
         selectedBranch={selectedBranch}
         closeTreeModal={closeTreeModal}
+      />
+
+      <DnDeleteModal 
+        isDeleteModalOpen={isDeleteModalOpen}
+        selectedBranch={selectedBranch}
+        closeDeleteModal={closeDeleteModal}
       />
     </div>
   )

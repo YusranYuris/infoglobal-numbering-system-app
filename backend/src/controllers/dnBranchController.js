@@ -204,7 +204,7 @@ export const previewDeleteBranch = async (req, res) => {
                 idBranch: dnBranch[0].idBranch,
                 description: dnBranch[0].description,
                 affectedBranch: affectedBranch.length,
-                previewBranches: affectedBranch.slice(1, 6)
+                previewBranches: affectedBranch.slice(1,)
             }
         })
 
@@ -364,7 +364,9 @@ export const deleteBranch = async (req, res) => {
                     asc(dnBranches.subGroup),
                     asc(dnBranches.subSg)
                 );
-        };
+        } else {
+            affectedBranch = [dnBranch[0]]
+        }
 
         for (const branch of affectedBranch) {
             await deleteFile(branch.pdfUrl)
@@ -381,7 +383,10 @@ export const deleteBranch = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: deletedBranches
+            data: {
+                mainBranch: deletedBranches[0],
+                branchesToDelete: branchesToDelete
+            }
         })
 
     } catch (error) {

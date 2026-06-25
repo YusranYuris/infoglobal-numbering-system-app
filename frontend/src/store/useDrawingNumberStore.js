@@ -1,10 +1,13 @@
 import api from "../api/axios.js";
 import toast from "react-hot-toast"
 import { create } from "zustand";
+import { dnBranches } from "../../../backend/src/db/schema/dnBranches.js";
 
 export const useDrawingNumberStore = create((set, get) => ({
     isDrawingNumberLoading: false,
     isDnBranchLoading: false,
+    isDeleteBranchLoading: false,
+    isPreviewDeleteBranchLoading: false,
     loading: false,
     error: null,
     selectedBranch: null,
@@ -17,13 +20,21 @@ export const useDrawingNumberStore = create((set, get) => ({
     openEditModal: (branch) => set({ isEditModalOpen: true, selectedBranch: branch }),
     openDeleteModal: (branch) => set({ isDeleteModalOpen: true, selectedBranch: branch }),
     
-    closeTreeModal: () => set({ isTreeModalOpen: false, selectedBranch: null }),
+    closeTreeModal: () => set({ isTreeModalOpen: false, selectedBranch: null, dnFamily: {} }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedBranch: null }),
     closeDeleteModal: () => set({ isDeleteModalOpen: false, selectedBranch: null }),
 
+    // Untuk select Parent
     drawingNumbers: [],
+
+    // Untuk menampilkan data Drawing Number pada tabel
     dnBranches: [],
+
+    // Untuk visualisasi tree
     dnFamily: {},
+
+    // Untuk preview delete
+    affectedBranches: {},
 
     dnFormData: {
         drawingKind: "",
@@ -114,6 +125,7 @@ export const useDrawingNumberStore = create((set, get) => ({
             const response = await api.post("/drawing-numbers", formData)
 
             await get().fetchDrawingNumbers();
+            await get().fetchDnBranches();
 
             get().resetDnFormData();
 
@@ -190,6 +202,60 @@ export const useDrawingNumberStore = create((set, get) => ({
             set({dnFamily: response.data.data, error: null})
         } catch (error) {
             set({error: "Something went wrong", dnFamily: {}})
+        }
+    },
+
+    // Add Update Branch Later Here
+
+    fetchPreviewDeleteBranch: async (id) => {
+        set({isPreviewDeleteBranchLoading: true})
+        try {
+            const response = await api.get(`/dn-branches/${id}/preview-delete`)
+
+            set({affectedBranches: response.data.data.previewBranches, error: null})
+        } catch (error) {
+            set({error: "Something went wrong", affectedBranches: {}})
+        } finally {
+            set({isPreviewDeleteBranchLoading: false})
+        }
+    },
+
+    deleteDrawingNumber: async (id) => {
+       set({isDeleteBranchLoading: true})
+        try {
+            const response = await api.delete(`/drawing-numbers/${id}`)
+            await get().fetchDnBranches()
+            toast.success(`Drawing Number: ${response.data.data.idDn} has been successfully deleted`)
+            return true
+
+            
+        } catch (error) {
+            console.log("Error in deleteDrawingNumber function")
+            toast.error("Something went wrong")
+            return false
+        } finally {
+            set({isDeleteBranchLoading: false})
+        } 
+    },
+
+    deleteBranch: async (id) => {
+        set({isDeleteBranchLoading: true})
+        try {
+            const response = await api.delete(`/dn-branches/${id}`)
+            toast.success(`Drawing Number: ${response.data.data.mainBranch.idBranch} has been successfully deleted`)
+            const ids = response.data.data.branchesToDelete
+            set(prev => ({
+                dnBranches: prev.dnBranches.filter(branch => !ids.includes(branch.idBranch))
+            }))
+
+            return true
+
+        } catch (error) {
+            console.log("Error in deleteBranch function")
+            toast.error("Something went wrong")
+            return false
+        } finally {
+            set({isDeleteBranchLoading: false})
         }
     }
 }));

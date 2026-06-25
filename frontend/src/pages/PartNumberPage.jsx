@@ -6,7 +6,7 @@ import { DRAWING_KIND, KIND_CODE, CATEGORY_CODE, FUNCTION_CODE, DESIGNATION_CODE
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import { FileText, RotateCcw, SquarePen, Trash2 } from "lucide-react";
-import PnTreeModal from "../components/PnTreeModal.jsx";
+import PnTreeModal from "../components/tree-modal/PnTreeModal.jsx";
 
 const PartNumberPage = () => {
   const user = useAuthStore((state) => state.user)
