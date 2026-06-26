@@ -450,9 +450,6 @@ const PartNumberPage = () => {
                           </td>
                           <td className={styles.textCenter}>
                             <div className={styles.actionsContainer}>
-                              <button className={styles.btnEdit}>
-                                <SquarePen />
-                              </button>
                               <button onClick={() => openPnRelationDeleteModal(pn)} key={pn.id} className={styles.btnDelete}>
                                 <Trash2 />
                               </button>
