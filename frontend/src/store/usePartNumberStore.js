@@ -6,24 +6,32 @@ export const usePartNumberStore = create((set, get) => ({
     loading: false,
     isPartNumberLoading: false,
     isPnRelationLoading: false,
+    isPreviewDeletePnRelationLoading: false,
+    isDeletePnRelationLoading: false,
+    isDeletePartNumberLoading: false,
     error: null,
     selectedPart: null,
 
     isTreeModalOpen: false,
     isEditModalOpen: false,
-    isDeleteModalOpen: false,
+    isPnRelationDeleteModalOpen: false,
+    inPartNumberDeleteModalOpen: false,
 
     openTreeModal: (pn) => set({ isTreeModalOpen: true, selectedPart: pn }),
     openEditModal: (pn) => set({ isEditModalOpen: true, selectedPart: pn }),
-    openDeleteModal: (pn) => set({ isDeleteModalOpen: true, selectedPart: pn }),
+    openPnRelationDeleteModal: (pn) => set({ isPnRelationDeleteModalOpen: true, selectedPart: pn }),
+    openPartNumberDeleteModal: (pn) => set({ isPartNumberDeleteModalOpen: true, selectedPart: pn }),
     
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedPart: null }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedPart: null }),
-    closeDeleteModal: () => set({ isDeleteModalOpen: false, selectedPart: null }),
+    closePnRelationDeleteModal: () => set({ isPnRelationDeleteModalOpen: false, selectedPart: null }),
+    closePartNumberDeleteModal: () => set({ isPartNumberDeleteModalOpen: false, selectedPart: null }),
 
     partNumbers: [],
     pnForest: [],
     pnFamily: {},
+    formPartNumbers: [],
+    affectedPn: {},
 
     // PART NUMBER FORM DATA
     pnFormData: {
@@ -86,6 +94,9 @@ export const usePartNumberStore = create((set, get) => ({
         }
     }),
 
+    activeTab: "relation",
+    setActiveTab: (tab) => set((state) => ({activeTab: tab})),
+
     addPartNumber: async (e) => {
         e.preventDefault();
         set({ isPartNumberLoading: true })
@@ -127,7 +138,7 @@ export const usePartNumberStore = create((set, get) => ({
         set({loading: true})
         try {
             const response = await api.get("/part-numbers");
-            set({partNumbers: response.data.data, error: null})
+            set({partNumbers: response.data.data, formPartNumbers: response.data.data, error: null})
         } catch (error) {
             set({error: "Something went wrong", partNumbers: []})
         } finally {
@@ -149,7 +160,7 @@ export const usePartNumberStore = create((set, get) => ({
 
             const response = await api.post("/pn-relations", formData);
 
-            // Fetch PN Relation
+            await get().fetchPnForest()
 
             toast.success(`Part Number: ${response.data.data.pnCode} has been added to ${response.data.data.rootId}`)
 
@@ -181,6 +192,53 @@ export const usePartNumberStore = create((set, get) => ({
             set({pnFamily: response.data.data, error: null})
         } catch (error) {
             set({error: "Something went wrong", pnFamily: {}})
+        }
+    },
+
+    fetchPreviewDeletePnRelation: async (id) => {
+        set({isPreviewDeletePnRelationLoading: true})
+        try {
+            const response = await api.get(`/pn-relations/${id}/preview-delete`)
+
+            set({affectedPn: response.data.data.previewPn, error: null})
+        } catch (error) {
+            set({error: "Something went wrong", affectedPn: {}})
+        } finally {
+            set({isPreviewDeletePnRelationLoading: false})
+        }
+    },
+
+    deletePnRelation: async (id) => {
+        set({isDeletePnRelationLoading: true})
+        try {
+            const response = await api.delete(`/pn-relations/${id}`)
+            toast.success(`Part Number Relation: ${response.data.data.mainRelation.pnCode} has been successfully deleted`)
+            const ids = response.data.data.relationsToDelete
+            set(prev => ({
+                pnForest: prev.pnForest.filter(relations => !ids.includes(relations.idRelations))
+            }))
+
+            return true
+        } catch (error) {
+            console.log("Error in deletePnRelation function")
+            toast.error("Something went wrong")
+            return false
+        } finally {
+            set({isDeletePnRelationLoading: false})
+        }
+    },
+
+    deletePartNumber: async (id) => {
+        set({isDeletePartNumberLoading: true})
+        try {
+            const response = await api.delete(`part-numbers/${id}`)
+            toast.success(`Part Number Relation: ${response.data.data.idPn} has been successfully deleted`)
+            set(prev => ({partNumbers: prev.partNumbers.filter(partNumber => partNumber.idPn !== id)}))
+            return true
+        } catch (error) {
+            console.log("Error in deletePnRelation function")
+            toast.error("Something went wrong")
+            return false
         }
     }
 }))

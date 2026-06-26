@@ -1,5 +1,5 @@
 import { db } from "../db/index.js";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { pnRelations } from "../db/schema/pnRelations.js";
 import { buildPnTree } from "../utils/buildPnTree.js";
 import { partNumbers } from "../db/schema/partNumbers.js";
@@ -10,6 +10,7 @@ export const getPnForest = async (req, res) => {
     try {
         const allRelations = await db
             .select({
+                idRelations: pnRelations.idRelations,
                 rootId: pnRelations.rootId,
                 parentId: pnRelations.parentId,
                 pnCode: pnRelations.pnCode,
@@ -28,7 +29,7 @@ export const getPnForest = async (req, res) => {
         if (!allRelations || allRelations.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: `Data branch dengan tidak ditemukan.`
+                message: `Data relation tidak ditemukan.`
             });
         };
 
@@ -131,6 +132,7 @@ export const previewDeletePn = async (req, res) => {
     try {
         const pnRoot = await db
             .select({
+                idRelations: pnRelations.idRelations,
                 rootId: pnRelations.rootId,
                 parentId: pnRelations.parentId,
                 pnCode: pnRelations.pnCode,
@@ -145,11 +147,20 @@ export const previewDeletePn = async (req, res) => {
             );
 
         const pnFamily = await db
-            .select()
+            .select({
+                idRelations: pnRelations.idRelations,
+                rootId: pnRelations.rootId,
+                parentId: pnRelations.parentId,
+                pnCode: pnRelations.pnCode,
+                hierarchy: pnRelations.hierarchy,
+                description: partNumbers.description,
+            })
             .from(pnRelations)  
-            .where(eq(pnRelations.rootId, pnRoot[0].rootId)) 
-        
-        console.log(pnFamily)
+            .where(eq(pnRelations.rootId, pnRoot[0].rootId))
+            .leftJoin(
+                partNumbers,
+                eq(pnRelations.pnCode, partNumbers.idPn)
+            );
 
         if (!pnFamily || pnFamily.length === 0) {
             return res.status(404).json({
@@ -170,7 +181,7 @@ export const previewDeletePn = async (req, res) => {
                 pnCode: pnRoot[0].pnCode,
                 description: pnRoot[0].description,
                 affectedPn: affectedPn.length,
-                previewPn: affectedPn.slice(1, 6)
+                previewPn: affectedPn.slice(1,)
             }
         })
 
@@ -184,18 +195,70 @@ export const previewDeletePn = async (req, res) => {
 }
 
 export const deletePnRelation = async (req, res) => {
-    const { id } = req.params;
+    const { idRelations } = req.params;
 
     try {
-        const deletedPnRelation = await db
+        const pnRoot = await db
+            .select({
+                idRelations: pnRelations.idRelations,
+                rootId: pnRelations.rootId,
+                parentId: pnRelations.parentId,
+                pnCode: pnRelations.pnCode,
+                hierarchy: pnRelations.hierarchy,
+                description: partNumbers.description,
+            })
+            .from(pnRelations)
+            .where(eq(pnRelations.idRelations, idRelations))
+            .leftJoin(
+                partNumbers,
+                eq(pnRelations.pnCode, partNumbers.idPn)
+            );
+
+        const pnFamily = await db
+            .select({
+                idRelations: pnRelations.idRelations,
+                rootId: pnRelations.rootId,
+                parentId: pnRelations.parentId,
+                pnCode: pnRelations.pnCode,
+                hierarchy: pnRelations.hierarchy,
+                description: partNumbers.description,
+            })
+            .from(pnRelations)  
+            .where(eq(pnRelations.rootId, pnRoot[0].rootId))
+            .leftJoin(
+                partNumbers,
+                eq(pnRelations.pnCode, partNumbers.idPn)
+            );
+
+        if (!pnFamily || pnFamily.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `Data branch tidak ditemukan.`
+            });
+        };
+
+        const tree = buildPnTree(pnFamily);
+
+        const subFamily = findNode(tree[0], pnRoot[0].pnCode);
+
+        const affectedPn = flattenTreeData([subFamily]);
+
+        const relationsToDelete = affectedPn.map(
+            relations => relations.idRelations
+        );
+
+        const deletedRelations = await db
             .delete(pnRelations)
-            .where(eq(pnRelations.idRelations, id))
-            .returning();
-        
+            .where(inArray(pnRelations.idRelations, relationsToDelete))
+            .returning()
+
         res.status(200).json({
             success: true,
-            data: deletedPnRelation[0]
-        });
+            data: {
+                mainRelation: deletedRelations[0],
+                relationsToDelete: relationsToDelete
+            }
+        })
             
     } catch (error) {
         console.log("Error in deletePnRelation function", error)

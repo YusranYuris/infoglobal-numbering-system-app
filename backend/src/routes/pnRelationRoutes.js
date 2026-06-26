@@ -25,6 +25,6 @@ router.get("/:rootId/tree", authenticate, getTree)
 router.get("/:idRelations/preview-delete", authenticate, previewDeletePn)
 
 // Delete PN Relation
-router.delete("/:id", authenticate, deletePnRelation)
+router.delete("/:idRelations", authenticate, deletePnRelation)
 
 export default router;

@@ -222,9 +222,86 @@
 }
 
 /* ----- DRAWING NUMBER TABLE ----- */
-.tableContainer {
+.tableWrapper {
+  box-sizing: border-box;
   border: 3px solid #1F1A17;
-  border-radius: 10px;
+  border-radius: 50px 50px 10px 10px;
+  overflow: hidden;
+  background: #F4F4F4;
+
+  filter: drop-shadow(
+    2px 2px 6px rgba(0,0,0,0.25)
+  );
+} 
+
+.tabs {
+  position: relative;
+
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-around;
+  gap: 3rem;
+
+  padding: 0 2rem;
+
+  background: #F4F4F4;
+}
+
+.tab {
+  position: relative;
+
+  background: none;
+  border: none;
+  width: 100%;
+
+  text-align: center;
+
+  padding: 1.5rem 0;
+
+  font-size: 2rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  color: #A6A6A6;
+}
+
+.tab:hover {
+  color: #1F1A17;
+}
+
+.activeTab {
+  color: #1F1A17;
+}
+
+.indicator {
+  position: absolute;
+
+  bottom: -1px;
+  left: 0.00001rem;
+
+  width: 65rem;
+  height: 0.6rem;
+
+  background: #1F1A17;
+  border-radius: 999px;
+
+  transition: transform 0.5s ease;
+}
+
+.indicatorLeft {
+  transform: translateX(0);
+}
+
+.indicatorRight {
+  transform: translateX(65rem);
+}
+
+.tableContainer {
+  border-width: 3px 0 0 0;
+  border-style: solid;
+  border-color: #1F1A17;
+  border-radius: 0 0 10px 10px;
   background-color: #F4F4F4;
   filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.25));
 
@@ -240,13 +317,13 @@
 
 /* 2. Atur area rel/jalur tempat scrollbar berjalan (Track) */
 .tableContainer::-webkit-scrollbar-track {
-  background: #ABABAB; /* Warna latar belakang jalur scrollbar */
+  background: #c1c1c1; /* Warna latar belakang jalur scrollbar */
   border-radius: 10px;
 }
 
 /* 3. Atur batang scrollbar yang digeser (Thumb) */
 .tableContainer::-webkit-scrollbar-thumb {
-  background: #c1c1c1; /* Warna batang scrollbar */
+  background: #ABABAB; /* Warna batang scrollbar */
   border-radius: 10px; /* Membuat ujung batang menjadi melengkung/bulat */
 }
 
@@ -308,7 +385,7 @@
 
 .actionsContainer {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     gap: 0.3rem;
 }

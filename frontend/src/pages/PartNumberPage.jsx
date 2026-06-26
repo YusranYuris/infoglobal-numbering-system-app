@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import { FileText, RotateCcw, SquarePen, Trash2 } from "lucide-react";
 import PnTreeModal from "../components/tree-modal/PnTreeModal.jsx";
+import PnRelationDeleteModal from "../components/delete-modal/PnRelationDeleteModal.jsx";
+import PartNumbernDeleteModal from "../components/delete-modal/PartNumberDeleteModal.jsx";
 
 const PartNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -20,20 +22,25 @@ const PartNumberPage = () => {
 
     isTreeModalOpen,
     isEditModalOpen,
-    isDeleteModalOpen,
+    isPnRelationDeleteModalOpen,
+    isPartNumberDeleteModalOpen,
 
     openTreeModal,
     openEditModal,
-    openDeleteModal,
+    openPnRelationDeleteModal,
+    openPartNumberDeleteModal,
 
     closeTreeModal,
     closeEditModal,
-    closeDeleteModal,
+    closePnRelationDeleteModal,
+    closePartNumberDeleteModal,
 
     partNumbers,
     pnFormData,
     setPnFormData,
     resetPnFormData,
+
+    formPartNumbers,
 
     pnRelationFormData,
     setPnRelationFormData,
@@ -48,7 +55,10 @@ const PartNumberPage = () => {
     addPartNumber,
     fetchPartNumbers,
     addPnRelation,
-    fetchPnForest
+    fetchPnForest,
+
+    activeTab,
+    setActiveTab
   } = usePartNumberStore();
 
   useEffect(() => {
@@ -56,17 +66,24 @@ const PartNumberPage = () => {
     fetchPnForest();
   }, [fetchPartNumbers, fetchPnForest])
 
-  const filteredPartNumbers = pnForest.filter((pn) => {
+
+  // To filter PN Relations Table based on the Search Table
+  const filteredPnRelations = pnForest.filter((pn) => {
     const matchPnCode = pn.pnCode?.toLowerCase().includes(searchFilters.pnCode.toLowerCase());
     const matchDescription = pn.description?.toLowerCase().includes(searchFilters.description.toLowerCase());
     const matchRequester = pn.createdBy?.toLowerCase().includes(searchFilters.createdBy.toLowerCase());
 
-    console.log(matchDescription)
-    console.log(matchPnCode)
-    console.log(matchRequester)
-
     return matchPnCode && matchDescription && matchRequester
   });
+
+  // To filter Part Numbers Table based on the Search Table
+  const filteredPartNumbers = partNumbers.filter((pn) => {
+    const matchPnCode = pn.idPn?.toLowerCase().includes(searchFilters.pnCode.toLowerCase());
+    const matchDescription = pn.description?.toLowerCase().includes(searchFilters.description.toLowerCase());
+    const matchRequester = pn.createdBy?.toLowerCase().includes(searchFilters.createdBy.toLowerCase());
+
+    return matchPnCode && matchDescription && matchRequester
+  })
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -232,7 +249,7 @@ const PartNumberPage = () => {
                     <option value="" disabled>Select part number root</option>
                   )}
 
-                  {partNumbers.map((partNumber) => {
+                  {formPartNumbers.map((partNumber) => {
                     return (
                       <option key={partNumber.idPn} value={partNumber.idPn}>
                         {`${partNumber.idPn}`}
@@ -251,7 +268,7 @@ const PartNumberPage = () => {
                     <option value="" disabled>Select part number parent</option>
                   )}
 
-                  {partNumbers.map((partNumber) => {
+                  {formPartNumbers.map((partNumber) => {
                     return (
                       <option key={partNumber.idPn} value={partNumber.idPn}>
                         {`${partNumber.idPn}`}
@@ -270,7 +287,7 @@ const PartNumberPage = () => {
                     <option value="" disabled>Select part number</option>
                   )}
 
-                  {partNumbers.map((partNumber) => {
+                  {formPartNumbers.map((partNumber) => {
                     return (
                       <option key={partNumber.idPn} value={partNumber.idPn}>
                         {`${partNumber.idPn}`}
@@ -357,71 +374,172 @@ const PartNumberPage = () => {
           </div>
         </div>
 
-        {/* TABLE DATA */}
-        <div className={styles.tableContainer}>
-          <table className={styles.customTable}>
-            <thead>
-              <tr>
-                <th>Parent</th>
-                <th>Child</th>
-                <th>Grandchild</th>
-                <th>G-Grandchild</th>
-                <th>Description</th>
-                <th className={styles.textCenter}>Attachment</th>
-                <th className={styles.textCenter}>Actions</th>
-              </tr>
-            </thead>
+        {/* TABLE TAB SELECTOR */}
+        <div className={styles.tableWrapper}>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${
+                activeTab === "relation" ? styles.activeTab : ""
+              }`}
+              onClick={() => setActiveTab("relation")}
+            >
+              PN Relation
+            </button>
 
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="7" className={styles.textCenter}>Loading Data...</td>
-                </tr>
-              ) : filteredPartNumbers.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className={styles.textCenter}>No Data Found</td>
-                </tr>
-              ) : (
-                filteredPartNumbers.map((pn) => {
-                  const isParent = pn.hierarchy === 1;
-                  const isChild = pn.hierarchy === 2;
-                  const isGrandchild = pn.hierarchy === 3;
-                  const isGGrandchild = pn.hierarchy === 4;
+            <button
+              className={`${styles.tab} ${
+                activeTab === "partNumber" ? styles.activeTab : ""
+              }`}
+              onClick={() => setActiveTab("partNumber")}
+            >
+              Part Number
+            </button>
 
-                  return (
-                    <tr onClick={() => openTreeModal(pn)} key={pn.id}>
-                      <td>{isParent ? pn.pnCode : ""}</td>
-                      <td>{isChild ? `➥ ${pn.pnCode}` : ""}</td>
-                      <td>{isGrandchild ? `➥ ${pn.pnCode}` : ""}</td>
-                      <td>{isGGrandchild ? `➥ ${pn.pnCode}` : ""}</td>
-                      <td>{pn.description}</td>
-                      <td>
-                        <div className={pn.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
-                            <FileText className={styles.fileIcon} />
-                        </div>  
-                      </td>
-                      <td className={styles.textCenter}>
-                        <div className={styles.actionsContainer}>
-                          <button className={styles.btnEdit}>
-                            <SquarePen />
-                          </button>
-                          <button className={styles.btnDelete}>
-                            <Trash2 />
-                          </button>
-                        </div>
-                      </td>
+            <div
+              className={`${styles.indicator} ${
+                activeTab === "partNumber"
+                  ? styles.indicatorRight
+                  : styles.indicatorLeft
+              }`}
+            />
+          </div>
+          
+          {/* PN RELATION TABLE DATA */}
+          {activeTab === "relation" && (
+            <div className={styles.tableContainer}>
+              <table className={styles.customTable}>
+                <thead>
+                  <tr>
+                    <th>Parent</th>
+                    <th>Child</th>
+                    <th>Grandchild</th>
+                    <th>G-Grandchild</th>
+                    <th>Description</th>
+                    <th className={styles.textCenter}>Attachment</th>
+                    <th className={styles.textCenter}>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="7" className={styles.textCenter}>Loading Data...</td>
                     </tr>
-                  )
-                })
-              ) }
-            </tbody>
-          </table>
+                  ) : filteredPnRelations.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className={styles.textCenter}>No Data Found</td>
+                    </tr>
+                  ) : (
+                    filteredPnRelations.map((pn) => {
+                      const isParent = pn.hierarchy === 1;
+                      const isChild = pn.hierarchy === 2;
+                      const isGrandchild = pn.hierarchy === 3;
+                      const isGGrandchild = pn.hierarchy === 4;
+
+                      return (
+                        <tr>
+                          <td onClick={() => openTreeModal(pn)} key={pn.id}>{isParent ? pn.pnCode : ""}</td>
+                          <td onClick={() => openTreeModal(pn)} key={pn.id}>{isChild ? `➥ ${pn.pnCode}` : ""}</td>
+                          <td onClick={() => openTreeModal(pn)} key={pn.id}>{isGrandchild ? `➥ ${pn.pnCode}` : ""}</td>
+                          <td onClick={() => openTreeModal(pn)} key={pn.id}>{isGGrandchild ? `➥ ${pn.pnCode}` : ""}</td>
+                          <td onClick={() => openTreeModal(pn)} key={pn.id}>{pn.description}</td>
+                          <td>
+                            <div className={pn.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
+                                <FileText className={styles.fileIcon} />
+                            </div>  
+                          </td>
+                          <td className={styles.textCenter}>
+                            <div className={styles.actionsContainer}>
+                              <button className={styles.btnEdit}>
+                                <SquarePen />
+                              </button>
+                              <button onClick={() => openPnRelationDeleteModal(pn)} key={pn.id} className={styles.btnDelete}>
+                                <Trash2 />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) }
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* PART NUMBER TABLE DATA */}
+          {activeTab === "partNumber" && (
+            <div className={styles.tableContainer}>
+              <table className={styles.customTable}>
+                <thead>
+                  <tr>
+                    <th>Part Number</th>
+                    <th>Requester</th>
+                    <th>Description</th>
+                    <th className={styles.textCenter}>Attachment</th>
+                    <th className={styles.textCenter}>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5" className={styles.textCenter}>Loading Data...</td>
+                    </tr>
+                  ) : filteredPartNumbers.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className={styles.textCenter}>No Data Found</td>
+                    </tr>
+                  ) : (
+                    filteredPartNumbers.map((pn) => {
+                      return (
+                        <tr>
+                          <td>{pn.idPn}</td>
+                          <td>{pn.createdBy}</td>
+                          <td>{pn.description}</td>
+                          <td>
+                            <div className={pn.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
+                                <FileText className={styles.fileIcon} />
+                            </div>  
+                          </td>
+                          <td className={styles.textCenter}>
+                            <div className={styles.actionsContainer}>
+                              <button className={styles.btnEdit}>
+                                <SquarePen />
+                              </button>
+                              <button onClick={() => openPartNumberDeleteModal(pn)} key={pn.id} className={styles.btnDelete}>
+                                <Trash2 />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) }
+                </tbody>
+              </table>
+            </div>
+          )}
+
         </div>
+        
       </div>
       <PnTreeModal
         isTreeModalOpen={isTreeModalOpen}
         selectedPart={selectedPart}
         closeTreeModal={closeTreeModal}
+      />
+
+      <PnRelationDeleteModal 
+        isPnRelationDeleteModalOpen={isPnRelationDeleteModalOpen}
+        selectedPart={selectedPart}
+        closePnRelationDeleteModal={closePnRelationDeleteModal}
+      />
+
+      <PartNumbernDeleteModal 
+        isPartNumberDeleteModalOpen={isPartNumberDeleteModalOpen}
+        selectedPart={selectedPart}
+        closePartNumberDeleteModal={closePartNumberDeleteModal}
       />
     </div>
   )

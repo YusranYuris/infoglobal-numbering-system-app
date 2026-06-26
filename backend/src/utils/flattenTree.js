@@ -6,7 +6,7 @@ export const flattenTreeData = (nestedData = []) => {
 
     // Siapkan object flat baru untuk baris tabel ini
     const row = {
-      id: node.idRelations,
+      idRelations: node.idRelations,
       pnCode: node.pnCode, // Menyelaraskan property tabel Anda (pnCode bertindak sebagai idBranch)
       rootId: node.rootId,
       parentId: node.parentId,
