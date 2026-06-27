@@ -4,22 +4,37 @@ import { create } from "zustand";
 import { dnBranches } from "../../../backend/src/db/schema/dnBranches.js";
 
 export const useDrawingNumberStore = create((set, get) => ({
-    isDrawingNumberLoading: false,
-    isDnBranchLoading: false,
-    isDeleteBranchLoading: false,
-    isPreviewDeleteBranchLoading: false,
     loading: false,
     error: null,
+
+    // For Drawing Number Generator Form
+    isDrawingNumberLoading: false,
+
+    // For DN Branch Generator Form
+    isDnBranchLoading: false,
+
+    // For DN Branch Edit Modal
+    isDnBranchEditModalLoading: false,
+    isEditDnBranchLoading: false,
+
+    // For DN Branch Delete Modal
+    isPreviewDeleteBranchLoading: false,
+    isDeleteBranchLoading: false,
+
+    // For all Modal in Drawing Number Page
     selectedBranch: null,
 
+    // Conditional to Open Modal
     isTreeModalOpen: false,
     isEditModalOpen: false,
     isDeleteModalOpen: false,
 
+    // Open Modal Function
     openTreeModal: (branch) => set({ isTreeModalOpen: true, selectedBranch: branch }),
     openEditModal: (branch) => set({ isEditModalOpen: true, selectedBranch: branch }),
     openDeleteModal: (branch) => set({ isDeleteModalOpen: true, selectedBranch: branch }),
     
+    // Close Modal Function
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedBranch: null, dnFamily: {} }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedBranch: null }),
     closeDeleteModal: () => set({ isDeleteModalOpen: false, selectedBranch: null }),
@@ -107,6 +122,21 @@ export const useDrawingNumberStore = create((set, get) => ({
             description: "",
             createdBy: "",
         }
+    }),
+
+    editDnBranchFormData: {
+        description: "",
+        pdf: null,
+        pdfUrl: "",
+    },
+
+    setEditDnBranchFormData: (editDnBranchFormData) => set({ editDnBranchFormData }),
+    resetEditDnBranchFormData: () => set({
+        editDnBranchFormData: {
+            description: "",
+            pdf: null,
+            pdfUrl: "",
+        },
     }),
 
     addDrawingNumber: async (e) => {
@@ -205,7 +235,51 @@ export const useDrawingNumberStore = create((set, get) => ({
         }
     },
 
-    // Add Update Branch Later Here
+    fetchDnBranch: async (id) => {
+        set({isDnBranchEditModalLoading: true})
+        try {
+            const response = await api.get(`/dn-branches/${id}`)
+            set((state) => ({
+                editDnBranchFormData: {...state.editDnBranchFormData, description: response.data.data.description, pdfUrl: response.data.data.pdfUrl},
+                error: null,
+            }))
+        } catch (error) {
+            set({error: "Something went wrong"})
+        } finally {
+            set({isDnBranchEditModalLoading: false})
+        }
+    },
+
+    updateDnBranch: async (id) => {
+        set({isEditDnBranchLoading: true})
+        try {
+            const { editDnBranchFormData } = get();
+
+            const payload = new FormData();
+
+            Object.entries(editDnBranchFormData).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) [
+                    payload.append(key, value)
+                ]
+            })
+
+            const response = await api.put(`/dn-branches/${id}`, payload)
+
+            await get().fetchDnBranches()
+
+            get().resetEditDnBranchFormData()
+
+            toast.success(`Drawing Number: ${response.data.data.idBranch} has been successfully updated.`)
+
+            return true
+            
+        } catch (error) {
+            toast.error("Something went wrong")
+            return false
+        } finally {
+            set({isEditDnBranchLoading: false})
+        }
+    },
 
     fetchPreviewDeleteBranch: async (id) => {
         set({isPreviewDeleteBranchLoading: true})

@@ -228,7 +228,7 @@ export const getBranch = async (req, res) => {
         
         res.status(200).json({
             success: true,
-            data: branch
+            data: branch[0]
         });
 
     } catch (error) {
@@ -243,7 +243,7 @@ export const getBranch = async (req, res) => {
 // Untuk update Description dan File PDF pada Drawing Number Branch
 export const updateBranch = async (req, res) => {
     const { id } = req.params;
-    const { description } = req.body;
+    const { description, pdfUrl } = req.body;
     const pdfFile = req.file;
 
     try {
@@ -273,10 +273,14 @@ export const updateBranch = async (req, res) => {
         }
 
         if (formattedBranch[0].pdfUrl) {
-            // Rename nama file pada Supabase Storage Bucket dan ambil URL
-            const pdfUrl = await renameFile("drawing-number" , formattedBranch[0].idBranch, formattedBranch[0].description, description)
+            if (!pdfFile && !pdfUrl) {
+                await deleteFile(formattedBranch[0].pdfUrl)
+                updateData.pdfUrl = pdfUrl
+            } else {
+                const pdfLink = await renameFile("drawing-number", formattedBranch[0].idPn, formattedBranch[0].description, description)
 
-            updateData.pdfUrl = pdfUrl;
+                updateData.pdfUrl = pdfLink
+            }
         }
 
         const updatedBranch = await db

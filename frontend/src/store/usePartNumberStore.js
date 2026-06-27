@@ -4,6 +4,7 @@ import { create } from "zustand";
 
 export const usePartNumberStore = create((set, get) => ({
     loading: false,
+    error: null,
 
     // For Part Number Generator Form
     isPartNumberLoading: false,
@@ -21,21 +22,23 @@ export const usePartNumberStore = create((set, get) => ({
 
     // For Part Number Delete Modal
     isDeletePartNumberLoading: false,
-    error: null,
 
     // For all Modal in Part Number Page
     selectedPart: null,
 
+    // Conditional to Open Modal
     isTreeModalOpen: false,
     isEditModalOpen: false,
     isPnRelationDeleteModalOpen: false,
     inPartNumberDeleteModalOpen: false,
 
+    // Open Modal Function
     openTreeModal: (pn) => set({ isTreeModalOpen: true, selectedPart: pn }),
     openEditModal: (pn) => set({ isEditModalOpen: true, selectedPart: pn }),
     openPnRelationDeleteModal: (pn) => set({ isPnRelationDeleteModalOpen: true, selectedPart: pn }),
     openPartNumberDeleteModal: (pn) => set({ isPartNumberDeleteModalOpen: true, selectedPart: pn }),
     
+    // Close Modal Function
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedPart: null }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedPart: null }),
     closePnRelationDeleteModal: () => set({ isPnRelationDeleteModalOpen: false, selectedPart: null }),
@@ -127,7 +130,6 @@ export const usePartNumberStore = create((set, get) => ({
         description: "",
         pdf: null,
         pdfUrl: "",
-        removePdf: false,
     },
 
     setEditPnFormData: (editPnFormData) => set({ editPnFormData }),
@@ -136,7 +138,6 @@ export const usePartNumberStore = create((set, get) => ({
             description: "",
             pdf: null,
             pdfUrl: "",
-            removePdf: false,
         }
     }),
 
@@ -198,7 +199,7 @@ export const usePartNumberStore = create((set, get) => ({
                 error: null,
             }))
         } catch (error) {
-            set({error: "Something went wrong", partNumber: []})
+            set({error: "Something went wrong"})
         } finally {
             set({isPartNumberEditModalLoading: false})
         }
@@ -220,6 +221,8 @@ export const usePartNumberStore = create((set, get) => ({
             const response = await api.put(`/part-numbers/${id}`, payload)
 
             await get().fetchPartNumbers()
+
+            get().resetEditPnFormData()
 
             toast.success(`Part Number: ${response.data.data.idPn} has been successfully updated.`)
 

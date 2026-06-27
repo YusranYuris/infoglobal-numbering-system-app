@@ -6,7 +6,7 @@ import { Eye, FileText, SquarePen, Trash2, TriangleAlert } from "lucide-react";
 export default function PartNumberEditModal({ isEditModalOpen, selectedPart, closeEditModal }) {
     if (!isEditModalOpen) return null;
 
-    const { isPartNumberEditModalLoading , isEditPartNumberLoading, editPnFormData, setEditPnFormData, fetchPartNumber, updatePartNumber} = usePartNumberStore();
+    const { isPartNumberEditModalLoading , isEditPartNumberLoading, editPnFormData, setEditPnFormData, resetEditPnFormData, fetchPartNumber, updatePartNumber} = usePartNumberStore();
 
     useEffect(() => {
         fetchPartNumber(selectedPart.idPn)
@@ -18,6 +18,11 @@ export default function PartNumberEditModal({ isEditModalOpen, selectedPart, clo
         if (isSuccess) {
             closeEditModal();
         }
+    }
+
+    const handleCancel = async () => {
+        closeEditModal()
+        resetEditPnFormData()
     }
 
     return (

@@ -6,14 +6,14 @@ import { Eye, FileText, SquarePen, Trash2, TriangleAlert } from "lucide-react";
 export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEditModal }) {
     if (!isEditModalOpen) return null;
 
-    const { isPartNumberEditModalLoading , isEditPartNumberLoading, editPnFormData, setEditPnFormData, fetchPartNumber, updatePartNumber} = usePartNumberStore();
+    const { isDnBranchEditModalLoading , isEditDnBranchLoading, editDnBranchFormData, setEditDnBranchFormData, fetchDnBranch, updateDnBranch} = useDrawingNumberStore();
 
     useEffect(() => {
-        fetchPartNumber(selectedBranch.idPn)
-    }, [fetchPartNumber])
+        fetchDnBranch(selectedBranch.idBranch)
+    }, [fetchDnBranch])
 
     const handleDelete = async () => {
-        const isSuccess = await updatePartNumber(selectedBranch.idPn)
+        const isSuccess = await updateDnBranch(selectedBranch.idBranch)
 
         if (isSuccess) {
             closeEditModal();
@@ -22,19 +22,19 @@ export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEdit
 
     return (
         <div className={styles.container} onClick={closeEditModal}>
-            {isPartNumberEditModalLoading ? <span className={styles.spinner} /> : (
+            {isDnBranchEditModalLoading ? <span className={styles.spinner} /> : (
                 <div className={styles.dialogBox} onClick={(e) => e.stopPropagation()}>
 
                 {/* HEADER */}
                 <div className={styles.header}>
                     <SquarePen className={styles.editIcon} />
-                    <h2>Edit Part Number {selectedBranch.idPn}</h2>
+                    <h2>Edit Part Number {selectedBranch.idBranch}</h2>
                 </div>
 
                 <div>
                     <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Part Number</span>
-                        <span className={styles.infoValue}>{selectedBranch.idPn}</span>
+                        <span className={styles.infoLabel}>Drawing Number</span>
+                        <span className={styles.infoValue}>{selectedBranch.idBranch}</span>
                     </div>
 
                     <div className={styles.infoRow}>
@@ -46,9 +46,9 @@ export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEdit
                         <span className={styles.infoLabel}>Description</span>
                         <input 
                             type="text" 
-                            value={editPnFormData.description}
+                            value={editDnBranchFormData.description}
                             className={styles.editInput}
-                            onChange={(e) => setEditPnFormData({...editPnFormData, description: e.target.value})}
+                            onChange={(e) => setEditDnBranchFormData({...editDnBranchFormData, description: e.target.value})}
                         />
                     </div>
 
@@ -58,29 +58,29 @@ export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEdit
                         </label>
 
                         <div className={styles.pdfCard}>
-                            <label htmlFor="edit-pn-pdf" className={styles.uploadArea}>
+                            <label htmlFor="edit-dn-branch-pdf" className={styles.uploadArea}>
                                 <div className={styles.fileInfo}>
                                     <span className={styles.pdfIcon}>
                                         <FileText size={18} />
                                     </span>
 
                                     <span className={styles.fileName}>
-                                        {editPnFormData.pdf
-                                            ? editPnFormData.pdf.name
-                                            : editPnFormData.pdfUrl
-                                            ? `${selectedBranch.idPn} ${selectedBranch.description}`
+                                        {editDnBranchFormData.pdf
+                                            ? editDnBranchFormData.pdf.name
+                                            : editDnBranchFormData.pdfUrl
+                                            ? `${selectedBranch.idBranch} ${selectedBranch.description}`
                                             : "Click to upload PDF"
                                         }
                                     </span>
                                 </div>
                             </label>
 
-                            {(editPnFormData.pdfUrl || editPnFormData.pdf) && (
+                            {(editDnBranchFormData.pdfUrl || editDnBranchFormData.pdf) && (
                                 <div className={styles.fileActions}>
 
-                                    {editPnFormData.pdfUrl && (
+                                    {editDnBranchFormData.pdfUrl && (
                                         <a
-                                            href={editPnFormData.pdfUrl}
+                                            href={editDnBranchFormData.pdfUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className={styles.iconBtn}
@@ -94,8 +94,8 @@ export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEdit
                                         type="button"
                                         className={styles.iconBtnDanger}
                                         onClick={() =>
-                                            setEditPnFormData({
-                                                ...editPnFormData,
+                                            setEditDnBranchFormData({
+                                                ...editDnBranchFormData,
                                                 pdf: null,
                                                 pdfUrl: "",
                                             })
@@ -108,13 +108,13 @@ export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEdit
                             )}
                         </div>
                         <input
-                            id="edit-pn-pdf"
+                            id="edit-dn-branch-pdf"
                             hidden
                             type="file"
                             accept=".pdf"
                             onChange={(e) =>
-                                setEditPnFormData({
-                                    ...editPnFormData,
+                                setEditDnBranchFormData({
+                                    ...editDnBranchFormData,
                                     pdf: e.target.files[0],
                                 })
                             }
@@ -133,7 +133,7 @@ export default function DnEditModal({ isEditModalOpen, selectedBranch, closeEdit
                         className={styles.btnEdit}
                         onClick={handleDelete}  
                     >
-                        {isEditPartNumberLoading ? (
+                        {isEditDnBranchLoading ? (
                             <span className={styles.btnSpinner} />
                         ) : (
                             <>

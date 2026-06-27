@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore.js";
 import DnTreeModal from "../components/tree-modal/DnTreeModal.jsx";
 import DnDeleteModal from "../components/delete-modal/DnDeleteModal.jsx";
+import DnEditModal from "../components/edit-modal/DnEditModal.jsx";
 
 const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -449,7 +450,7 @@ const DrawingNumberPage = () => {
                       </td>
                       <td className={styles.textCenter}>
                         <div className={styles.actionsContainer}>
-                          <button className={styles.btnEdit}>
+                          <button onClick={() => openEditModal(branch)} key={branch.id} className={styles.btnEdit}>
                             <SquarePen />
                           </button>
                           <button onClick={() => openDeleteModal(branch)} key={branch.id} className={styles.btnDelete}>
@@ -472,6 +473,12 @@ const DrawingNumberPage = () => {
         isTreeModalOpen={isTreeModalOpen}
         selectedBranch={selectedBranch}
         closeTreeModal={closeTreeModal}
+      />
+
+      <DnEditModal 
+        isEditModalOpen={isEditModalOpen}
+        selectedBranch={selectedBranch}
+        closeEditModal={closeEditModal}
       />
 
       <DnDeleteModal 
