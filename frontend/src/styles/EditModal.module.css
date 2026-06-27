@@ -1,0 +1,297 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* LOADING SPINNING ICON */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 5rem;
+  height: 5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.btnSpinner {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.dialogBox {
+    border-top: 6px solid #81aee9;
+    background-color: #F8FAFC;
+    padding: 40px;
+    border-radius: 12px;
+    max-width: 90%;
+    max-height: 80%;
+    min-width: 50rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 3rem;
+}
+
+.editIcon {
+    width: 6rem;
+    height: 6rem;
+    color: #5C84B7;
+}
+
+.header h2 {
+    margin: 0;
+    color: #1F1A17;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+/* Form Styles */
+.infoRow{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    align-items:center;
+    gap:16px;
+    margin-bottom:16px;
+    font-size: 1.6rem;
+}
+
+.infoLabel{
+    font-weight:600;
+    color:#1F1A17;
+}
+
+.infoValue{
+    background:#f5f5f5;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:10px 14px;
+}
+
+.editInput{
+    font-family: 'Inter', sans-serif;
+    font-size: 1.6rem;
+    padding:10px 14px;
+
+    border:1px solid #ddd;
+    border-radius:8px;
+
+    outline:none;
+
+    transition: all 0.3s ease-out;
+}
+
+.editInput:focus{
+    border:1px solid #1F1A17;
+    box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+/* Upload PDF Styles */
+.pdfContainer{
+    margin-top: 2rem;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.formLabel {
+    font-weight:600;
+    color:#1F1A17;
+    font-size: 1.6rem;
+}
+
+.pdfCard{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    border:2px dashed #d5d5d5;
+    border-radius:10px;
+
+    transition:.25s;
+
+    min-height:70px;
+
+    overflow:hidden;
+}
+
+.pdfCard:hover{
+    border-color:#2b6cf0;
+}
+
+.uploadArea{
+
+    flex:1;
+
+    cursor:pointer;
+
+    padding:18px;
+
+    display:flex;
+    align-items:center;
+
+}
+
+.fileInfo{
+
+    display:flex;
+    align-items:center;
+
+    gap:14px;
+
+    overflow:hidden;
+}
+
+.pdfIcon{
+
+    font-size:26px;
+}
+
+.fileName{
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+    font-size:15px;
+}
+
+.fileActions{
+
+    display:flex;
+    align-items:center;
+
+    padding-right:10px;
+
+    gap:8px;
+}
+
+.iconBtnDanger{
+
+    width:36px;
+    height:36px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.iconBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 8px;
+
+    background: #edf5ff;
+    color: #2563eb;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.iconBtn:hover {
+    background: #dbeafe;
+}
+
+.iconBtn:focus {
+    outline: none;
+}
+
+.iconBtn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .25);
+}
+
+.iconBtnDanger{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F4F4F4;
+    color: #780606;
+}
+
+.iconBtnDanger:hover{
+    background:#ffe4e6;
+}
+
+/* Action Buttons Styles */
+.actionButtons {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btnCancel {
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    color: #475569;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btnCancel:hover {
+    background-color: #F8FAFC;
+}
+
+.btnEdit {
+    background-color: #5C84B7;
+    border: none;
+    color: #FFFFFF;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btnEdit:hover {
+    background-color: #2f5990;
+}

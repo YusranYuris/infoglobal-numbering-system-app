@@ -9,6 +9,7 @@ import { FileText, RotateCcw, SquarePen, Trash2 } from "lucide-react";
 import PnTreeModal from "../components/tree-modal/PnTreeModal.jsx";
 import PnRelationDeleteModal from "../components/delete-modal/PnRelationDeleteModal.jsx";
 import PartNumbernDeleteModal from "../components/delete-modal/PartNumberDeleteModal.jsx";
+import PartNumberEditModal from "../components/edit-modal/PartNumberEditModal.jsx";
 
 const PartNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -501,7 +502,7 @@ const PartNumberPage = () => {
                           </td>
                           <td className={styles.textCenter}>
                             <div className={styles.actionsContainer}>
-                              <button className={styles.btnEdit}>
+                              <button onClick={() => openEditModal(pn)} key={pn.id} className={styles.btnEdit}>
                                 <SquarePen />
                               </button>
                               <button onClick={() => openPartNumberDeleteModal(pn)} key={pn.id} className={styles.btnDelete}>
@@ -531,6 +532,12 @@ const PartNumberPage = () => {
         isPnRelationDeleteModalOpen={isPnRelationDeleteModalOpen}
         selectedPart={selectedPart}
         closePnRelationDeleteModal={closePnRelationDeleteModal}
+      />
+
+      <PartNumberEditModal 
+        isEditModalOpen={isEditModalOpen}
+        selectedPart={selectedPart}
+        closeEditModal={closeEditModal}
       />
 
       <PartNumbernDeleteModal 

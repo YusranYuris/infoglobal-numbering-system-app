@@ -4,12 +4,26 @@ import { create } from "zustand";
 
 export const usePartNumberStore = create((set, get) => ({
     loading: false,
+
+    // For Part Number Generator Form
     isPartNumberLoading: false,
+
+    // For PN Relation Generator Form
     isPnRelationLoading: false,
+
+    // For Part Number Edit Modal
+    isPartNumberEditModalLoading: false,
+    isEditPartNumberLoading: false,
+
+    // For PN Relation Delete Modal
     isPreviewDeletePnRelationLoading: false,
     isDeletePnRelationLoading: false,
+
+    // For Part Number Delete Modal
     isDeletePartNumberLoading: false,
     error: null,
+
+    // For all Modal in Part Number Page
     selectedPart: null,
 
     isTreeModalOpen: false,
@@ -27,10 +41,19 @@ export const usePartNumberStore = create((set, get) => ({
     closePnRelationDeleteModal: () => set({ isPnRelationDeleteModalOpen: false, selectedPart: null }),
     closePartNumberDeleteModal: () => set({ isPartNumberDeleteModalOpen: false, selectedPart: null }),
 
+    // For Part Numbers Table
     partNumbers: [],
+
+    // For PN Relations Table
     pnForest: [],
+
+    // For PN Relations Tree
     pnFamily: {},
+
+    // For Part Numbers Form Input
     formPartNumbers: [],
+
+    // For PN Relation Delete Modal
     affectedPn: {},
 
     // PART NUMBER FORM DATA
@@ -73,6 +96,7 @@ export const usePartNumberStore = create((set, get) => ({
         hierarchy: ""
     }}),
 
+    // SEARCHBAR FILTERS
     searchFilters: {
         pnCode: "",
         description: "",
@@ -94,8 +118,27 @@ export const usePartNumberStore = create((set, get) => ({
         }
     }),
 
+    // TABLE DATA TABS
     activeTab: "relation",
     setActiveTab: (tab) => set((state) => ({activeTab: tab})),
+
+    // EDIT PART NUMBER FORM DATA
+    editPnFormData: {
+        description: "",
+        pdf: null,
+        pdfUrl: "",
+        removePdf: false,
+    },
+
+    setEditPnFormData: (editPnFormData) => set({ editPnFormData }),
+    resetEditPnFormData: () => set({
+        editPnFormData: {
+            description: "",
+            pdf: null,
+            pdfUrl: "",
+            removePdf: false,
+        }
+    }),
 
     addPartNumber: async (e) => {
         e.preventDefault();
@@ -143,6 +186,49 @@ export const usePartNumberStore = create((set, get) => ({
             set({error: "Something went wrong", partNumbers: []})
         } finally {
             set({loading: false})
+        }
+    },
+
+    fetchPartNumber: async (id) => {
+        set({isPartNumberEditModalLoading: true})
+        try {
+            const response = await api.get(`/part-numbers/${id}`)
+            set((state) => ({
+                editPnFormData: {...state.editPnFormData, description: response.data.data.description, pdfUrl: response.data.data.pdfUrl},
+                error: null,
+            }))
+        } catch (error) {
+            set({error: "Something went wrong", partNumber: []})
+        } finally {
+            set({isPartNumberEditModalLoading: false})
+        }
+    },
+
+    updatePartNumber: async (id) => {
+        set({isEditPartNumberLoading: true})
+        try {
+            const { editPnFormData } = get();
+
+            const payload = new FormData();
+
+            Object.entries(editPnFormData).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    payload.append(key, value)
+                }
+            });
+
+            const response = await api.put(`/part-numbers/${id}`, payload)
+
+            await get().fetchPartNumbers()
+
+            toast.success(`Part Number: ${response.data.data.idPn} has been successfully updated.`)
+
+            return true
+        } catch (error) {
+            toast.error("Something went wrong")
+            return false
+        } finally {
+            set({isEditPartNumberLoading: false})
         }
     },
 

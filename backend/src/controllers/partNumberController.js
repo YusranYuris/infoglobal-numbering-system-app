@@ -1,6 +1,6 @@
 import { db } from "../db/index.js";
 import { partNumbers } from "../db/schema/partNumbers.js";
-import { and, eq, max } from "drizzle-orm";
+import { and, asc, eq, max } from "drizzle-orm";
 
 import { uploadFile } from "../utils/uploadFile.js";
 import { deleteFile } from "../utils/deleteFile.js";
@@ -10,7 +10,10 @@ export const getAllPartNumbers = async (req, res) => {
     try {
         const allPartNumbers = await db
             .select()
-            .from(partNumbers);
+            .from(partNumbers)
+            .orderBy(
+                asc(partNumbers.idPn)
+            )
 
         res.status(200).json({
             success: true,
@@ -123,7 +126,7 @@ export const getPartNumber = async (req, res) => {
         
         res.status(200).json({
             success: true,
-            data: partNumber
+            data: partNumber[0]
         })
 
     } catch (error) {
@@ -138,7 +141,7 @@ export const getPartNumber = async (req, res) => {
 // Untuk update Description dan File PDF pada Part Number
 export const updatePartNumber = async (req, res) => {
     const { id } = req.params;
-    const { description } = req.body;
+    const { description, pdfUrl } = req.body;
     const pdfFile = req.file;
 
     try {
@@ -169,9 +172,14 @@ export const updatePartNumber = async (req, res) => {
         }
 
         if (formattedPartNumber[0].pdfUrl) {
-            const pdfUrl = await renameFile("part-number", formattedPartNumber[0].idPn, formattedPartNumber[0].description, description)
+            if (!pdfFile && !pdfUrl) {
+                await deleteFile(formattedPartNumber[0].pdfUrl)
+                updateData.pdfUrl = pdfUrl
+            } else {
+                const pdfLink = await renameFile("part-number", formattedPartNumber[0].idPn, formattedPartNumber[0].description, description)
 
-            updateData.pdfUrl = pdfUrl
+                updateData.pdfUrl = pdfLink
+            }
         }
 
         const updatedPartNumber = await db
