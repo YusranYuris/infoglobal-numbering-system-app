@@ -165,9 +165,9 @@ export const updatePartNumber = async (req, res) => {
         if (pdfFile) {
             await deleteFile(formattedPartNumber[0].pdfUrl)
 
-            const pdfUrl = await uploadFile("part-number", pdfFile, formattedPartNumber[0].idPn, description)
+            const pdfLink = await uploadFile("part-number", pdfFile, formattedPartNumber[0].idPn, description)
 
-            updateData.pdfUrl = pdfUrl;
+            updateData.pdfUrl = pdfLink;
 
         }
 

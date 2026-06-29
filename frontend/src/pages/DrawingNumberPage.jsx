@@ -9,6 +9,7 @@ import { useAuthStore } from "../store/useAuthStore.js";
 import DnTreeModal from "../components/tree-modal/DnTreeModal.jsx";
 import DnDeleteModal from "../components/delete-modal/DnDeleteModal.jsx";
 import DnEditModal from "../components/edit-modal/DnEditModal.jsx";
+import DrawingNumberPDFModal from "../components/pdf-modal/DnPDFModal.jsx";
 
 const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -37,14 +38,17 @@ const DrawingNumberPage = () => {
     setDnBranchFormData,
 
     isTreeModalOpen,
+    isPDFModalOpen,
     isEditModalOpen,
     isDeleteModalOpen,
 
     openTreeModal,
+    openPDFModal,
     openEditModal,
     openDeleteModal,
     
     closeTreeModal,
+    closePDFModal,
     closeEditModal,
     closeDeleteModal,
   } = useDrawingNumberStore()
@@ -473,6 +477,12 @@ const DrawingNumberPage = () => {
         isTreeModalOpen={isTreeModalOpen}
         selectedBranch={selectedBranch}
         closeTreeModal={closeTreeModal}
+      />
+
+      <DrawingNumberPDFModal 
+        isPDFModalOpen={isPDFModalOpen}
+        selectedBranch={selectedBranch}
+        closePDFModal={closePDFModal}
       />
 
       <DnEditModal 

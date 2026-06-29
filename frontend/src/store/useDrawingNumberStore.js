@@ -1,5 +1,5 @@
 import api from "../api/axios.js";
-import toast from "react-hot-toast"
+import toast from "react-hot-toast";
 import { create } from "zustand";
 import { dnBranches } from "../../../backend/src/db/schema/dnBranches.js";
 
@@ -26,16 +26,19 @@ export const useDrawingNumberStore = create((set, get) => ({
 
     // Conditional to Open Modal
     isTreeModalOpen: false,
+    isPDFModalOpen: false,
     isEditModalOpen: false,
     isDeleteModalOpen: false,
 
     // Open Modal Function
     openTreeModal: (branch) => set({ isTreeModalOpen: true, selectedBranch: branch }),
+    openPDFModal: (branch) => set({ isPDFModalOpen: true, selectedBranch: branch }),
     openEditModal: (branch) => set({ isEditModalOpen: true, selectedBranch: branch }),
     openDeleteModal: (branch) => set({ isDeleteModalOpen: true, selectedBranch: branch }),
     
     // Close Modal Function
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedBranch: null, dnFamily: {} }),
+    closePDFModal: () => set({ isPDFModalOpen: false, selectedBranch: null, dnFamily: {} }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedBranch: null }),
     closeDeleteModal: () => set({ isDeleteModalOpen: false, selectedBranch: null }),
 
@@ -258,9 +261,9 @@ export const useDrawingNumberStore = create((set, get) => ({
             const payload = new FormData();
 
             Object.entries(editDnBranchFormData).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) [
+                if (value !== null && value !== undefined) {
                     payload.append(key, value)
-                ]
+                }
             })
 
             const response = await api.put(`/dn-branches/${id}`, payload)

@@ -8,8 +8,9 @@ import { useAuthStore } from "../store/useAuthStore.js";
 import { FileText, RotateCcw, SquarePen, Trash2 } from "lucide-react";
 import PnTreeModal from "../components/tree-modal/PnTreeModal.jsx";
 import PnRelationDeleteModal from "../components/delete-modal/PnRelationDeleteModal.jsx";
-import PartNumbernDeleteModal from "../components/delete-modal/PartNumberDeleteModal.jsx";
+import PartNumberDeleteModal from "../components/delete-modal/PartNumberDeleteModal.jsx";
 import PartNumberEditModal from "../components/edit-modal/PartNumberEditModal.jsx";
+import PartNumberPDFModal from "../components/pdf-modal/PartNumberPDFModal.jsx";
 
 const PartNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -22,16 +23,19 @@ const PartNumberPage = () => {
     selectedPart,
 
     isTreeModalOpen,
+    isPDFModalOpen,
     isEditModalOpen,
     isPnRelationDeleteModalOpen,
     isPartNumberDeleteModalOpen,
 
     openTreeModal,
+    openPDFModal,
     openEditModal,
     openPnRelationDeleteModal,
     openPartNumberDeleteModal,
 
     closeTreeModal,
+    closePDFModal,
     closeEditModal,
     closePnRelationDeleteModal,
     closePartNumberDeleteModal,
@@ -497,7 +501,7 @@ const PartNumberPage = () => {
                           <td>{pn.description}</td>
                           <td>
                             <div className={pn.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
-                                <FileText className={styles.fileIcon} />
+                                <FileText className={styles.fileIcon} onClick={() => openPDFModal(pn)} />
                             </div>  
                           </td>
                           <td className={styles.textCenter}>
@@ -528,6 +532,12 @@ const PartNumberPage = () => {
         closeTreeModal={closeTreeModal}
       />
 
+      <PartNumberPDFModal 
+        isPDFModalOpen={isPDFModalOpen}
+        selectedPart={selectedPart}
+        closePDFModal={closePDFModal}
+      />
+
       <PnRelationDeleteModal 
         isPnRelationDeleteModalOpen={isPnRelationDeleteModalOpen}
         selectedPart={selectedPart}
@@ -540,7 +550,7 @@ const PartNumberPage = () => {
         closeEditModal={closeEditModal}
       />
 
-      <PartNumbernDeleteModal 
+      <PartNumberDeleteModal 
         isPartNumberDeleteModalOpen={isPartNumberDeleteModalOpen}
         selectedPart={selectedPart}
         closePartNumberDeleteModal={closePartNumberDeleteModal}

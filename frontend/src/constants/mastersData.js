@@ -43,6 +43,19 @@ export const DESIGNATION_CODE = [
     { id: "U", desc: "Unit"},
 ];
 
+export const DOC_KIND = [
+    { id: "0", desc: "Test Result"},
+    { id: "1", desc: "Technical Description"},
+    { id: "2", desc: "Drawing/Design"},
+    { id: "3", desc: "Operation Manual"},
+    { id: "4", desc: "Maintenance Manual"},
+    { id: "5", desc: "Installation Manual"},
+    { id: "6", desc: "Training Manual"},
+    { id: "7", desc: "Assessment Document"},
+    { id: "8", desc: "Conformity"},
+    { id: "9", desc: "Test Procedure"},
+]
+
 export const DEPARTMENT = [
     { id: "0", desc: "General"},
     { id: "1", desc: "Electronics"},

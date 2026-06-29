@@ -45,7 +45,7 @@ export const getDocument = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: document
+            data: document[0]
         });
         
     } catch (error) {
@@ -66,7 +66,7 @@ export const createDocument = async (req, res) => {
         year,
         description,
         isSequenced,
-        createdBy // Nanti diganti kalo sudah menggunakan JWT
+        createdBy
     } = req.body;
 
     let { sequence } = req.body;
@@ -142,7 +142,7 @@ export const createDocument = async (req, res) => {
 // Untuk update Description dan File PDF pada Document
 export const updateDocument = async (req, res) => {
     const { id } = req.params;
-    const { description } = req.body;
+    const { description, pdfUrl } = req.body;
     const pdfFile = req.file;
 
     try {
@@ -166,16 +166,20 @@ export const updateDocument = async (req, res) => {
         if (pdfFile) {
             await deleteFile(formattedIdDoc[0].pdfUrl)
 
-            const pdfUrl = await uploadFile("document", pdfFile, formattedIdDoc[0].idDoc, description);
+            const pdfLink = await uploadFile("document", pdfFile, formattedIdDoc[0].idDoc, description);
 
-            updateData.pdfUrl = pdfUrl;
+            updateData.pdfUrl = pdfLink;
         }
 
         if (formattedIdDoc[0].pdfUrl) {
-            // Rename nama file pada Supabase Storage Bucket dan ambil URL
-            const pdfUrl = await renameFile("document", formattedIdDoc[0].idDoc, formattedIdDoc[0].description, description);
-
-            updateData.pdfUrl = pdfUrl;
+            if (!pdfFile && !pdfUrl) {
+                await deleteFile(formattedIdDoc[0].pdfUrl)
+                updateData.pdfUrl = pdfUrl
+            } else {
+                // Rename nama file pada Supabase Storage Bucket dan ambil URL
+                const pdfUrl = await renameFile("document", formattedIdDoc[0].idDoc, formattedIdDoc[0].description, description);   
+                updateData.pdfUrl = pdfUrl;
+            }
         }
 
         const updatedDocument = await db

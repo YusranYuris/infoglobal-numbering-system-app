@@ -1,30 +1,33 @@
+import { useDocumentStore } from "../../store/useDocumentStore";
 import { useEffect, useState } from "react";
 import styles from "../../styles/DeleteModal.module.css";
-import { usePartNumberStore } from "../../store/usePartNumberStore";
 import { TriangleAlert } from "lucide-react";
 
-export default function PartNumberDeleteModal({ isPartNumberDeleteModalOpen, selectedPart, closePartNumberDeleteModal }) {
-    if (!isPartNumberDeleteModalOpen) return null;
+export default function DocumentDeleteModal({ isDeleteModalOpen, selectedDoc, closeDeleteModal }) {
+    if (!isDeleteModalOpen) return null;
 
-    const { isDeletePartNumberLoading, deletePartNumber} = usePartNumberStore();
-    const [ isExpanded, setIsExpanded ] = useState(false);
+    const {
+        isDeleteDocumentLoading,
+        deleteDocument
+    } = useDocumentStore();
+
     const [ confirmationText, setConfirmationText ] = useState("");
-    const [ isMatch, setIsMatch ] = useState(false);
+    const [isMatch, setIsMatch ] = useState(false);
 
     useEffect(() => {
-        setIsMatch(confirmationText === selectedPart.idPn)
+        setIsMatch(confirmationText === selectedDoc.idDoc)
     }, [confirmationText]);
 
     const handleDelete = async () => {
-        const isSuccess = await deletePartNumber(selectedPart.idPn)
+        const isSuccess = await deleteDocument(selectedDoc.idDoc)
 
         if (isSuccess) {
-            closePartNumberDeleteModal();
+            closeDeleteModal();
         }
     }
 
     return (
-        <div className={styles.container} onClick={closePartNumberDeleteModal}>
+        <div className={styles.container} onClick={closeDeleteModal}>
             <div className={styles.dialogBox} onClick={(e) => e.stopPropagation()}>
 
                 {/* HEADER */}
@@ -35,17 +38,17 @@ export default function PartNumberDeleteModal({ isPartNumberDeleteModalOpen, sel
 
                 {/* MESSAGE */}
                 <div className={styles.warningText}>
-                    <p>Are you sure you want to delete <strong>{selectedPart.idPn}</strong>?</p>
-                    <p>This action will automatically result deleting <span>other Part Number Relation data permanently</span>.</p>
+                    <p>Are you sure you want to delete <strong>{selectedDoc.idDoc}</strong>?</p>
+                    <p>This action will automatically result deleting <span>the Document Number data permanently</span>.</p>
                 </div>
 
                 {/* VALIDATION INPUT */}
                 <div className={styles.validationSection}>
-                    <label>To proceed, type <strong>"{selectedPart.idPn}"</strong> below here:</label>
-                    <input 
+                    <label>To proceed, type <strong>"{selectedDoc.idDoc}"</strong> below here:</label>
+                    <input
                         className={styles.inputValidation}
                         type="text" 
-                        placeholder={selectedPart.idPn}
+                        placeholder={selectedDoc.idDoc}
                         value={confirmationText}
                         onChange={(e) => setConfirmationText(e.target.value.toUpperCase())}
                     />
@@ -53,16 +56,16 @@ export default function PartNumberDeleteModal({ isPartNumberDeleteModalOpen, sel
 
                 {/* ACTION BUTTON */}
                 <div className={styles.actionButtons}>
-                    <button className={styles.btnCancel} onClick={closePartNumberDeleteModal}>
+                    <button className={styles.btnCancel} onClick={closeDeleteModal}>
                         Cancel
                     </button>
 
                     <button
                         className={styles.btnDelete}
                         disabled={!isMatch}
-                        onClick={handleDelete}  
+                        onClick={handleDelete}
                     >
-                        {isDeletePartNumberLoading ? (
+                        {isDeleteDocumentLoading ? (
                             <span className={styles.btnSpinner} />
                         ) : (
                             <>

@@ -28,18 +28,21 @@ export const usePartNumberStore = create((set, get) => ({
 
     // Conditional to Open Modal
     isTreeModalOpen: false,
+    isPDFModalOpen: false,
     isEditModalOpen: false,
     isPnRelationDeleteModalOpen: false,
     inPartNumberDeleteModalOpen: false,
 
     // Open Modal Function
     openTreeModal: (pn) => set({ isTreeModalOpen: true, selectedPart: pn }),
+    openPDFModal: (pn) => set({ isPDFModalOpen: true, selectedPart: pn }),
     openEditModal: (pn) => set({ isEditModalOpen: true, selectedPart: pn }),
     openPnRelationDeleteModal: (pn) => set({ isPnRelationDeleteModalOpen: true, selectedPart: pn }),
     openPartNumberDeleteModal: (pn) => set({ isPartNumberDeleteModalOpen: true, selectedPart: pn }),
     
     // Close Modal Function
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedPart: null }),
+    closePDFModal: () => set({ isPDFModalOpen: false, selectedPart: null }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedPart: null }),
     closePnRelationDeleteModal: () => set({ isPnRelationDeleteModalOpen: false, selectedPart: null }),
     closePartNumberDeleteModal: () => set({ isPartNumberDeleteModalOpen: false, selectedPart: null }),
@@ -328,6 +331,8 @@ export const usePartNumberStore = create((set, get) => ({
             console.log("Error in deletePnRelation function")
             toast.error("Something went wrong")
             return false
+        } finally {
+            set({isDeletePartNumberLoading: false})
         }
     }
 }))
