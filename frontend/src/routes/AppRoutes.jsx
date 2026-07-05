@@ -5,7 +5,7 @@ import {
 } from "react-router-dom";
 
 import LoginPage from "../pages/LoginPage";
-import AdminDashboardPage from "../pages/AdminDashboardPage";
+import HomePage from "../pages/HomePage";
 import DrawingNumberPage from "../pages/DrawingNumberPage";
 import PartNumberPage from "../pages/PartNumberPage";
 import DocumentPage from "../pages/DocumentPage";
@@ -25,10 +25,10 @@ function AppRoutes() {
                 />
 
                 <Route 
-                    path="/dashboard"
+                    path="/home"
                     element={
                         <ProtectedRoute>
-                            <AdminDashboardPage />
+                            <HomePage />
                         </ProtectedRoute>
                     }
                 />

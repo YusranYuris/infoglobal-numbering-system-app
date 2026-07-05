@@ -30,11 +30,7 @@ const LoginPage = () => {
 
       setAuth(user, token)
 
-      if (user.role === "admin") {
-        navigate("/dashboard");
-      } else {
-        navigate("/drawing-number");
-      };
+      navigate("/home");
     } catch (error) {
       console.log(error)
     }

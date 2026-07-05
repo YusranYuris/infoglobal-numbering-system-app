@@ -29,31 +29,27 @@ function Navbar() {
     return (
         <nav className={styles.navbar}>
                 <div>
-                    <Link to={user?.role === "admin" ? "/dashboard" : "/drawing-number"} >
+                    <Link to="/home">
                         <img src={infoglobalLogo} alt="infoglobal-logo" className={styles.logoMd} />
                     </Link>
                 </div>
 
                 <ul className={styles.navbarUl}>
-                    {user?.role === "admin" && (
-                        <>
-                            <li>
-                                <Link to="/dashboard" className={pathname === "/dashboard" ? styles.navActive : {}} >
-                                    Dashboard
-                                </Link>
-                            </li>
-                        </>
-                    )}
-
                     <li>
-                        <Link to="/drawing-number" className={pathname === "/drawing-number" ? styles.navActive : {}} >
-                            DN
+                        <Link to="/home" className={pathname === "/home" ? styles.navActive : {}} >
+                            Home
                         </Link>
                     </li>
 
                     <li>
                         <Link to="/part-number" className={pathname === "/part-number" ? styles.navActive : {}} >
                             PN
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link to="/drawing-number" className={pathname === "/drawing-number" ? styles.navActive : {}} >
+                            DN
                         </Link>
                     </li>
 

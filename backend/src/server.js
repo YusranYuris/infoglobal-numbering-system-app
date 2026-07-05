@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import homeRoutes from "./routes/homeRoutes.js"
 import dnBranchRoutes from "./routes/dnBranchRoutes.js"
 import documentRoutes from "./routes/documentRoutes.js"
 import drawingNumberRoutes from "./routes/drawingNumberRoutes.js"
@@ -22,6 +23,7 @@ app.use(cors()) // Penghubung Backend dengan Frontend dengan PORT berbeda
 app.use(helmet()) // Security middleware that sets various HTTP headers
 app.use(morgan("dev")) // Log the request
 
+app.use("/api/v1/home", homeRoutes)
 app.use("/api/v1/dn-branches", dnBranchRoutes)
 app.use("/api/v1/documents", documentRoutes)
 app.use("/api/v1/drawing-numbers", drawingNumberRoutes)
