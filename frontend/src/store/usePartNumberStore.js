@@ -77,6 +77,7 @@ export const usePartNumberStore = create((set, get) => ({
         categoryCode: "",
         functionCode: "",
         designationCode: "",
+        sequence: "",
         isSequenced: true,
         description: "",
         createdBy: "",
@@ -89,6 +90,7 @@ export const usePartNumberStore = create((set, get) => ({
         categoryCode: "",
         functionCode: "",
         designationCode: "",
+        sequence: "",
         isSequenced: true,
         description: "",
         createdBy: "",
@@ -310,18 +312,19 @@ export const usePartNumberStore = create((set, get) => ({
 
             const formData = {
                 ...pnRelationFormData,
-                hierarchy: pnRelationFormData.hierarchy === "" ? null : parseInt(pnRelationFormData.hierarchy, 10),
             };
 
             const response = await api.post("/pn-relations", formData);
 
             await get().fetchPnForest()
-
+            await get().resetPnRelationFormData()
             toast.success(`Part Number: ${response.data.data.pnCode} has been added to ${response.data.data.rootId}`)
 
         } catch (error) {
-            console.log("Error in addPnRelation function")
-            toast.error("Something went wrong")
+            console.log("Error in addPnRelation function", error)
+            toast.error(
+                error.response?.data?.message || "Something went wrong"
+            )
         } finally {
             set({isPnRelationLoading: false})
         }

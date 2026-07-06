@@ -463,7 +463,7 @@ const DrawingNumberPage = () => {
                       <td onClick={() => openTreeModal(branch)} key={branch.id}>{isSubSg ? `➥ ${branch.idBranch}` : ""}</td>
                       <td onClick={() => openTreeModal(branch)} key={branch.id}>{branch.description}</td>
                       <td>
-                        <div className={branch.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
+                        <div className={branch.pdfUrl ? styles.attachmentAvail : styles.attachmentNull} onClick={() => openPDFModal(branch)} key={branch.id}>
                             <FileText className={styles.fileIcon} />
                         </div>  
                       </td>

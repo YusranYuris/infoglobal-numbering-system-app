@@ -42,11 +42,10 @@ export const createDocument = async (req, res) => {
         companyAbbr,
         year,
         description,
+        sequence,
         isSequenced,
         createdBy
     } = req.body;
-
-    let { sequence } = req.body;
 
     const pdfFile = req.file;
 

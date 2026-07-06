@@ -138,13 +138,13 @@ export const useDocumentStore = create((set, get) => ({
     addDocument: async () => {
         set({isDocumentLoading: true})
         try {
-            const { docFormData } = get();
+            const { docFormData, fixedSequence } = get();
 
             const formData = {
                 ...docFormData,
                 docKind: docFormData.docKind === "" ? null : parseInt(docFormData.docKind, 10),
                 department: docFormData.department === "" ? null : parseInt(docFormData.department, 10),
-                isSequence: docFormData.sequence === "" ? true : false,
+                sequence: parseInt(fixedSequence, 10)
             };
 
             const payload = new FormData();
@@ -165,7 +165,7 @@ export const useDocumentStore = create((set, get) => ({
 
             return true
         } catch (error) {
-            console.log("Error in addDocument funciton");
+            console.log("Error in addDocument funciton", error);
             toast.error("Something went wrong")
 
             return false

@@ -126,7 +126,7 @@ export const previewAddPartNumber = async (req, res) => {
                     )
                 )
             // If the Sequence is already taken
-            if (check) {
+            if (check.length > 0) {
                 const sequences = await db
                     .select({
                         sequence: partNumbers.sequence,

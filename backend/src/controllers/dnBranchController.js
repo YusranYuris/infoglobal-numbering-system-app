@@ -8,6 +8,7 @@ import { deleteFile } from "../utils/deleteFile.js";
 import { renameFile } from "../utils/renameFile.js";
 import { drawingNumbers } from "../db/schema/drawingNumbers.js";
 import { buildDnTree } from "../utils/buildDnTree.js";
+import { check } from "drizzle-orm/gel-core";
 
 export const getAllBranch = async (req, res) => {
     try {
@@ -47,14 +48,43 @@ export const createBranch = async (req, res) => {
 
     const pdfFile = req.file;
 
+    // First Validation
     if (!rootId || group===null || !description || !createdBy)
         return res.status(400).json({
             success: false,
             message: "All fields are required"
         });
 
+    // Second Validation
+    if (!subGroup && subSg) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid Assignment"
+        });
+    }
+
     const numSubGroup = subGroup ? Number(subGroup) : 0;
     const numSubSg = subSg ? Number(subSg) : 0;
+
+    // Third Validation
+    const checkDuplicate = await db
+        .select()
+        .from(dnBranches)
+        .where(
+            and(
+                eq(dnBranches.rootId, rootId),
+                eq(dnBranches.group, group),
+                eq(dnBranches.subGroup, numSubGroup),
+                eq(dnBranches.subSg, numSubSg),
+            )
+        )
+    
+    if (checkDuplicate.length > 0) {
+        return res.status(400).json({
+            success: false,
+            message: `Drawing Number: ${checkDuplicate[0].idBranch} is already assigned`
+        });
+    }
 
     const formattedGroup = String(group).padStart(2, "0");
 

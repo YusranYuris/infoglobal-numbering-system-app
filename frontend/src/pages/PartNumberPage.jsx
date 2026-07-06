@@ -314,18 +314,9 @@ const PartNumberPage = () => {
                   })}
                 </select>
 
-                <label className={styles.formLabel} htmlFor="pn-hierarchy">Hierarchy</label>
-                <input 
-                  id="pn-hierarchy" 
-                  type="text"
-                  placeholder="e.g., 1, 2, 3, ...."
-                  value={pnRelationFormData.hierarchy}
-                  onChange={(e) => setPnRelationFormData({...pnRelationFormData, hierarchy: e.target.value})}
-                />
-
                 <button 
                   type="submit"
-                  disabled={!pnRelationFormData.rootId || !pnRelationFormData.hierarchy}
+                  disabled={!pnRelationFormData.rootId || !pnRelationFormData.parentId || !pnRelationFormData.pnCode}
                   className={styles.addButton}
                 >
                   {isPnRelationLoading ? (
@@ -462,7 +453,7 @@ const PartNumberPage = () => {
                           <td onClick={() => openTreeModal(pn)} key={pn.id}>{isGGrandchild ? `➥ ${pn.pnCode}` : ""}</td>
                           <td onClick={() => openTreeModal(pn)} key={pn.id}>{pn.description}</td>
                           <td>
-                            <div className={pn.pdfUrl ? styles.attachmentAvail : styles.attachmentNull}>
+                            <div className={pn.pdfUrl ? styles.attachmentAvail : styles.attachmentNull} onClick={() => openPDFModal(pn)}>
                                 <FileText className={styles.fileIcon} />
                             </div>  
                           </td>

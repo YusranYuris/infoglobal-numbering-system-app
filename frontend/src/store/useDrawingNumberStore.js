@@ -277,8 +277,10 @@ export const useDrawingNumberStore = create((set, get) => ({
             toast.success(`Drawing Number Branch: ${response.data.data.idBranch} added successfully`)
 
         } catch (error) {
-            console.log("Error in addDnBranch function")
-            toast.error("Something went wrong")
+            console.log("Error in addDnBranch function", error)
+            toast.error(
+                error.response?.data?.message || "Something went wrong"
+            )
         } finally {
             set({isDnBranchLoading: false})
         }

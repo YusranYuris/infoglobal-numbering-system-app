@@ -57,11 +57,96 @@ export const createPnRelation = async (req, res) => {
         rootId,
         parentId,
         pnCode,
-        hierarchy
     } = req.body;
 
     try {
-        const numHierarchy = Number(hierarchy)
+        // First Validation
+        if (rootId !== pnCode) {
+            const checkRoot = await db
+                .select()
+                .from(pnRelations)
+                .where(
+                    eq(pnRelations.rootId, rootId)
+                )
+            
+            if (checkRoot.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: `There is no Root Part Number: ${rootId}`
+                })
+            }
+        }
+
+        // Second Validation
+        const checkPnCode = await db
+            .select()
+            .from(pnRelations)
+            .where(
+                and(
+                    eq(pnRelations.rootId, rootId),
+                    eq(pnRelations.pnCode, pnCode),
+                )
+            )
+        
+        if (checkPnCode.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: `Part Number: ${pnCode} is already assigned in Root Part Number: ${rootId} family`
+            })
+        }
+
+        // Third Validation
+        const check = await db
+            .select()
+            .from(pnRelations)
+            .where(
+                and(
+                    eq(pnRelations.rootId, rootId),
+                    eq(pnRelations.parentId, parentId),
+                    eq(pnRelations.pnCode, pnCode),
+                )
+            )
+        
+        if (check.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "The Part Number Relation You Create is already Assigned"
+            })
+        };
+
+        if (rootId === pnCode && parentId !== pnCode) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Assignment"
+            })
+        }
+
+        let hierarchyPlaceholder = 0;
+
+        if (rootId !== pnCode) {
+            const findHierarchy = await db
+                .select({hierarchy: pnRelations.hierarchy})
+                .from(pnRelations)
+                .where(
+                    and(
+                        eq(pnRelations.rootId, rootId),
+                        eq(pnRelations.pnCode, parentId)
+                    )
+                )
+
+            if (findHierarchy[0].hierarchy === 4) {
+                return res.status(400).json({
+                    success: false,
+                    message: "You cannot assign a Part Number lower than a Great-Grandchild"
+                })
+            } else {
+                hierarchyPlaceholder = findHierarchy[0].hierarchy + 1;
+            }
+        } else {
+            hierarchyPlaceholder = 1;
+        }
+
+        const numHierarchy = Number(hierarchyPlaceholder)
         const newPnRelation = await db
             .insert(pnRelations)
             .values({
@@ -71,7 +156,7 @@ export const createPnRelation = async (req, res) => {
                 hierarchy: numHierarchy,
             }).returning();
         
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             data: newPnRelation[0]
         });
@@ -187,7 +272,7 @@ export const previewDeletePn = async (req, res) => {
 
     } catch (error) {
         console.log("Error in previewDeletePn function", error)
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
