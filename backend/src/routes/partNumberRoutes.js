@@ -5,6 +5,7 @@ import {
     getPartNumber,
     updatePartNumber,
     deletePartNumber,
+    previewAddPartNumber,
 } from "../controllers/partNumberController.js"
 import { authenticate } from "../middleware/authMiddleware.js";
 import { upload } from "../middleware/uploadMiddleware.js";
@@ -18,6 +19,9 @@ router.get("/", authenticate, getAllPartNumbers);
 
 // Create New Part Number
 router.post("/", authenticate, upload.single("pdf"), createPartNumber);
+
+// Preview New Part Number
+router.post("/preview", authenticate, previewAddPartNumber)
 
 // Get Part Number
 router.get("/:id", authenticate, getPartNumber);

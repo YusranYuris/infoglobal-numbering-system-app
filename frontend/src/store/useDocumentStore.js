@@ -8,6 +8,12 @@ export const useDocumentStore = create((set, get) => ({
     error: null,
 
     // For Document Number Generator Form
+    fixedSequence: null,
+    isPreviewAddDocumentLoading: false,
+
+    // For Document Number Add Preview Modal
+    previewDoc: "",
+    modalMessage: "",
     isDocumentLoading: false,
 
     // For Document Edit Modal
@@ -21,16 +27,19 @@ export const useDocumentStore = create((set, get) => ({
     selectedDoc: null,
 
     // Conditional to Open Modal
+    isConfirmationModalOpen: false,
     isPDFModalOpen: false,
     isEditModalOpen: false,
     isDeleteModalOpen: false,
 
     // Open Modal Function
+    openConfirmationModal: () => set({isConfirmationModalOpen: true}),
     openPDFModal: (doc) => set({ isPDFModalOpen: true, selectedDoc: doc }),
     openEditModal: (doc) => set({ isEditModalOpen: true, selectedDoc: doc }),
     openDeleteModal: (doc) => set({ isDeleteModalOpen: true, selectedDoc: doc }),
 
     // Close Modal Function
+    closeConfirmationModal: () => set({isConfirmationModalOpen: false}),
     closePDFModal: () => set({ isPDFModalOpen: false, selectedPart: null }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedPart: null }),
     closeDeleteModal: () => set({ isDeleteModalOpen: false, selectedPart: null }),
@@ -126,8 +135,7 @@ export const useDocumentStore = create((set, get) => ({
         }
     },
 
-    addDocument: async (e) => {
-        e.preventDefault();
+    addDocument: async () => {
         set({isDocumentLoading: true})
         try {
             const { docFormData } = get();
@@ -154,11 +162,59 @@ export const useDocumentStore = create((set, get) => ({
             get().resetDocFormData();
 
             toast.success(`Document Number: ${response.data.data.idDoc} has been added successfully`)
+
+            return true
         } catch (error) {
             console.log("Error in addDocument funciton");
             toast.error("Something went wrong")
+
+            return false
         } finally {
             set({isDocumentLoading: false})
+        }
+    },
+
+    previewAddDocument: async () => {
+        set({isPreviewAddDocumentLoading: true})
+        try {
+            const { docFormData } = get();
+            const formData = {
+                ...docFormData,
+                docKind: docFormData.docKind === "" ? null : parseInt(docFormData.docKind, 10),
+                department: docFormData.department === "" ? null : parseInt(docFormData.department, 10),
+                isSequenced: docFormData.sequence === "" ? true : false
+            };
+
+            delete formData.pdf;
+
+            const response = await api.post("/documents/preview", formData);
+
+            if (response.data.chosen) {
+                set({
+                    modalMessage: "The Sequence you chose is not available, we recommend this Document Number: ",
+                    error: null
+                })
+            } else {
+                set({
+                    modalMessage: "Are you sure you want too add this Document Number: ",
+                    error: null
+                })
+            }
+            set({
+                previewDoc: response.data.doc,
+                fixedSequence: response.data.sequence
+            })
+
+            return true
+
+        } catch (error) {
+            console.log(error)
+            console.log("Error in previewAddDocument function")
+            toast.error("Something went wrong")
+
+            return false
+        } finally {
+            set({isPreviewAddDocumentLoading: false})
         }
     },
 

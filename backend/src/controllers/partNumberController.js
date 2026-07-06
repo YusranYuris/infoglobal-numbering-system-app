@@ -35,12 +35,11 @@ export const createPartNumber = async (req, res) => {
         categoryCode,
         functionCode,
         designationCode,
+        sequence,
         isSequenced,
         description,
         createdBy
     } = req.body;
-
-    let { sequence } = req.body;
     
     const pdfFile = req.file;
 
@@ -50,32 +49,10 @@ export const createPartNumber = async (req, res) => {
             message: "All fields are required"
         });
     };
-
-    if (isSequenced === 'true') {
-        console.log(isSequenced)
-        const maxResult = await db
-            .select({maxSeq: max(partNumbers.sequence)})
-            .from(partNumbers)
-            .where(
-                and(
-                    eq(partNumbers.kindCode, kindCode),
-                    eq(partNumbers.categoryCode, categoryCode),
-                    eq(partNumbers.functionCode, functionCode),
-                    eq(partNumbers.designationCode, designationCode),
-                    eq(partNumbers.isSequenced, true)
-                )
-            );
-        
-        sequence = (maxResult[0].maxSeq || 0) + 1;
-    };
-
-    console.log(sequence)
     
     const formattedSequence = String(sequence).padStart(3, "0");
 
     const formattedIdPn = `${kindCode + categoryCode + functionCode}-${designationCode + formattedSequence}`;
-
-    
 
     try {
         // Mengambil file PDF
@@ -114,6 +91,127 @@ export const createPartNumber = async (req, res) => {
         });
     };
 };
+
+export const previewAddPartNumber = async (req, res) => {
+    const {
+        kindCode,
+        categoryCode,
+        functionCode,
+        designationCode,
+        sequence,
+        description,
+        createdBy
+    } = req.body;
+
+    try {
+        if (!kindCode || !categoryCode || !functionCode || !designationCode || !description || !createdBy) {
+            return res.status(400).json({
+                valid: false,
+                message: "All fields are required"
+            });
+        };
+
+        // If User Input the Sequence
+        if (sequence) {
+            const check = await db
+                .select()
+                .from(partNumbers)
+                .where(
+                    and(
+                        eq(partNumbers.kindCode, kindCode),
+                        eq(partNumbers.categoryCode, categoryCode),
+                        eq(partNumbers.functionCode, functionCode),
+                        eq(partNumbers.designationCode, designationCode),
+                        eq(partNumbers.sequence, sequence)
+                    )
+                )
+            // If the Sequence is already taken
+            if (check) {
+                const sequences = await db
+                    .select({
+                        sequence: partNumbers.sequence,
+                    })
+                    .from(partNumbers)
+                    .where(
+                        and(
+                            eq(partNumbers.kindCode, kindCode),
+                            eq(partNumbers.categoryCode, categoryCode),
+                            eq(partNumbers.functionCode, functionCode),
+                            eq(partNumbers.designationCode, designationCode),
+                        )
+                    )
+                    .orderBy(partNumbers.sequence);
+                
+                let next = 1;
+                for (const row of sequences) {
+                    if (row.sequence === next) {
+                        next++;
+                    } else if (row.sequence > next) {
+                        break;
+                    }
+                };
+
+                const formattedPn = `${kindCode + categoryCode + functionCode}-${designationCode + String(next).padStart(3, "0")}`;
+
+                res.status(200).json({
+                    valid: true,
+                    chosen: true,
+                    pn: formattedPn,
+                    sequence: next
+                });
+            } else {
+                const formattedPn = `${kindCode + categoryCode + functionCode}-${designationCode + String(sequence).padStart(3, "0")}`;
+
+                res.status(200).json({
+                    valid: true,
+                    chosen: false,
+                    pn: formattedPn,
+                    sequence: sequence
+                });
+            }
+        } else {
+            // If User didn't input the Sequence
+            const sequences = await db
+                .select({
+                    sequence: partNumbers.sequence,
+                })
+                .from(partNumbers)
+                .where(
+                    and(
+                        eq(partNumbers.kindCode, kindCode),
+                        eq(partNumbers.categoryCode, categoryCode),
+                        eq(partNumbers.functionCode, functionCode),
+                        eq(partNumbers.designationCode, designationCode),
+                    )
+                )
+                .orderBy(partNumbers.sequence);
+            
+            let next = 1;
+            for (const row of sequences) {
+                if (row.sequence === next) {
+                    next++;
+                } else if (row.sequence > next) {
+                    break;
+                }
+            };
+
+            const formattedPn = `${kindCode + categoryCode + functionCode}-${designationCode + String(next).padStart(3, "0")}`;
+
+            res.status(200).json({
+                valid: true,
+                chosen: false,
+                pn: formattedPn,
+                sequence: next
+            });
+        }
+    } catch (error) {
+        console.log("Error in previewAddPartNumber function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}
 
 export const getPartNumber = async (req, res) => {
     const { id } = req.params;

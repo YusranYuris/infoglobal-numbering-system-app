@@ -1,5 +1,5 @@
 import express from "express";
-import { createDrawingNumber, deleteDrawingNumber, getAllDrawingNumber, getDrawingNumber } from "../controllers/drawingNumberController.js"
+import { createDrawingNumber, deleteDrawingNumber, getAllDrawingNumber, getDrawingNumber, previewAddDrawingNumber } from "../controllers/drawingNumberController.js"
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -9,8 +9,11 @@ const router = express.Router();
 // Get All Drawing Numbers
 router.get("/", authenticate, getAllDrawingNumber)
 
-// Create New Drawing Numbers
+// Create New Drawing Number
 router.post("/", authenticate, createDrawingNumber)
+
+// Preview New Drawing Number
+router.post("/preview", authenticate, previewAddDrawingNumber)
 
 // Get Drawing Number
 router.get("/:id", authenticate, getDrawingNumber)

@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import DocumentEditModal from "../components/edit-modal/DocumentEditModal.jsx";
 import DocumentDeleteModal from "../components/delete-modal/DocumentDeleteModal.jsx";
 import DocumentPDFModal from "../components/pdf-modal/DocumentPDFModal.jsx";
+import DocumentConfirmationModal from "../components/confirmation-modal/DocumentConfirmationModal.jsx";
 
 const DocumentPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -17,18 +18,22 @@ const DocumentPage = () => {
     loading,
     error,
 
+    isPreviewAddDocumentLoading,
     isDocumentLoading,
 
     selectedDoc,
 
+    isConfirmationModalOpen,
     isPDFModalOpen,
     isEditModalOpen,
     isDeleteModalOpen,
 
+    openConfirmationModal,
     openPDFModal,
     openEditModal,
     openDeleteModal,
 
+    closeConfirmationModal,
     closePDFModal,
     closeEditModal,
     closeDeleteModal,
@@ -45,6 +50,7 @@ const DocumentPage = () => {
 
     fetchDocuments,
     addDocument,
+    previewAddDocument
   } = useDocumentStore();
 
   useEffect(() => {
@@ -69,6 +75,15 @@ const DocumentPage = () => {
     setSearchFilters(name, value)
   };
 
+  const handlePreviewAddDocument = async (e) => {
+    e.preventDefault()
+    const isValid = await previewAddDocument()
+
+    if (isValid) {
+      openConfirmationModal()
+    }
+  }
+
   return (
     <div className={styles.pageBody}>
       {/* NAVBAR */}
@@ -87,7 +102,7 @@ const DocumentPage = () => {
             <div className={styles.formInput}>
               <h2>Document Number Generator</h2>
 
-              <form className={styles.formGenerator} onSubmit={addDocument}>
+              <form className={styles.formGenerator} onSubmit={handlePreviewAddDocument}>
                 <div>
                   <label className={styles.formLabel} htmlFor="productAbbr">Product Abbreviation</label>
                   <input
@@ -212,7 +227,7 @@ const DocumentPage = () => {
                   disabled={!docFormData.productAbbr || !docFormData.docKind ||  !docFormData.department || !docFormData.companyAbbr || !docFormData.year || !docFormData.description || !docFormData.createdBy}
                   className={styles.addButton}
                 >
-                  {isDocumentLoading ? (
+                  {isPreviewAddDocumentLoading ? (
                     <span className={styles.spinner}></span>
                   ) : (
                     <>
@@ -385,6 +400,11 @@ const DocumentPage = () => {
           </table>
         </div>
       </div>
+
+      <DocumentConfirmationModal 
+        isConfirmationModalOpen={isConfirmationModalOpen}
+        closeConfirmationModal={closeConfirmationModal}
+      />
 
       <DocumentPDFModal 
         isPDFModalOpen={isPDFModalOpen}

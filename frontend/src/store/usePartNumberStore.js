@@ -7,10 +7,16 @@ export const usePartNumberStore = create((set, get) => ({
     error: null,
 
     // For Part Number Generator Form
-    isPartNumberLoading: false,
+    fixedSequence: null,
+    isPreviewAddPartNumberLoading: false,
 
     // For PN Relation Generator Form
     isPnRelationLoading: false,
+
+    // For Part Number Add Preview Modal
+    previewPn: "",
+    modalMessage: "",
+    isPartNumberLoading: false,
 
     // For Part Number Edit Modal
     isPartNumberEditModalLoading: false,
@@ -27,6 +33,7 @@ export const usePartNumberStore = create((set, get) => ({
     selectedPart: null,
 
     // Conditional to Open Modal
+    isConfirmationModalOpen: false,
     isTreeModalOpen: false,
     isPDFModalOpen: false,
     isEditModalOpen: false,
@@ -34,6 +41,7 @@ export const usePartNumberStore = create((set, get) => ({
     inPartNumberDeleteModalOpen: false,
 
     // Open Modal Function
+    openConfirmationModal: () => set({isConfirmationModalOpen: true}),
     openTreeModal: (pn) => set({ isTreeModalOpen: true, selectedPart: pn }),
     openPDFModal: (pn) => set({ isPDFModalOpen: true, selectedPart: pn }),
     openEditModal: (pn) => set({ isEditModalOpen: true, selectedPart: pn }),
@@ -41,6 +49,7 @@ export const usePartNumberStore = create((set, get) => ({
     openPartNumberDeleteModal: (pn) => set({ isPartNumberDeleteModalOpen: true, selectedPart: pn }),
     
     // Close Modal Function
+    closeConfirmationModal: () => set({isConfirmationModalOpen: false}),
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedPart: null }),
     closePDFModal: () => set({ isPDFModalOpen: false, selectedPart: null }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedPart: null }),
@@ -144,22 +153,37 @@ export const usePartNumberStore = create((set, get) => ({
         }
     }),
 
-    addPartNumber: async (e) => {
-        e.preventDefault();
+    // ========== ACTIONS ==========
+
+    // Get All Part Numbers Action
+    fetchPartNumbers: async () => {
+        set({loading: true})
+        try {
+            const response = await api.get("/part-numbers");
+            set({partNumbers: response.data.data, formPartNumbers: response.data.data, error: null})
+        } catch (error) {
+            set({error: "Something went wrong", partNumbers: []})
+        } finally {
+            set({loading: false})
+        }
+    },
+
+    // Create Part Number Action
+    addPartNumber: async () => {
         set({ isPartNumberLoading: true })
 
         try {
-            const { pnFormData } = get();
+            const { pnFormData, fixedSequence } = get();
             const formData = {
                 ...pnFormData,
-                kindCode: pnFormData.kindCode === "" ? null : parseInt(pnFormData.kindCode, 10),
-                functionCode: pnFormData.functionCode === "" ? null : parseInt(pnFormData.functionCode, 10),
-                isSequenced: pnFormData.sequence === "" ? true : false
+                kindCode: parseInt(pnFormData.kindCode, 10),
+                functionCode: parseInt(pnFormData.functionCode, 10),
+                sequence: parseInt(fixedSequence, 10)
             };
 
             const payload = new FormData();
 
-            Object.entries(pnFormData).forEach(([key, value]) => {
+            Object.entries(formData).forEach(([key, value]) => {
                 if (value !== null && value !== undefined) {
                     payload.append(key, value)
                 }
@@ -173,26 +197,64 @@ export const usePartNumberStore = create((set, get) => ({
 
             toast.success(`Part Number: ${response.data.data.idPn} successfully added`)
 
+            return true
+
         } catch (error) {
+            console.log(error)
             console.log("Error in addPartNumber function")
             toast.error("Something went wrong")
+            return false
         } finally {
             set({isPartNumberLoading: false})
         }
     },
 
-    fetchPartNumbers: async () => {
-        set({loading: true})
+    // Preview Add Part Number Action
+    previewAddPartNumber: async () => {
+        set({isPreviewAddPartNumberLoading: true})
         try {
-            const response = await api.get("/part-numbers");
-            set({partNumbers: response.data.data, formPartNumbers: response.data.data, error: null})
+            const { pnFormData } = get();
+            const formData = {
+                ...pnFormData,
+                kindCode: pnFormData.kindCode === "" ? null : parseInt(pnFormData.kindCode, 10),
+                functionCode: pnFormData.functionCode === "" ? null : parseInt(pnFormData.functionCode, 10),
+                isSequenced: pnFormData.sequence === "" ? true : false
+            };
+
+            delete formData.pdf;
+
+            const response = await api.post("/part-numbers/preview", formData);
+
+            if (response.data.chosen) {
+                set({
+                    modalMessage: "The Sequence you chose is not available, we recommend this Part Number: ",
+                    error: null
+                })
+            } else {
+                set({
+                    modalMessage: "Are you sure you want too add this Part Number: ",
+                    error: null
+                })
+            }
+            set({
+                previewPn: response.data.pn,
+                fixedSequence: response.data.sequence
+            })
+
+            return true
+
         } catch (error) {
-            set({error: "Something went wrong", partNumbers: []})
+            console.log(error)
+            console.log("Error in previewAddPartNumber function")
+            toast.error("Something went wrong")
+
+            return false
         } finally {
-            set({loading: false})
+            set({isPreviewAddPartNumberLoading: false})
         }
     },
 
+    // Get Part Number Action
     fetchPartNumber: async (id) => {
         set({isPartNumberEditModalLoading: true})
         try {
@@ -208,6 +270,7 @@ export const usePartNumberStore = create((set, get) => ({
         }
     },
 
+    // Update Part Number Action
     updatePartNumber: async (id) => {
         set({isEditPartNumberLoading: true})
         try {

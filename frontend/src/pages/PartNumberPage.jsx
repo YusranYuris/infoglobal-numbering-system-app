@@ -11,29 +11,33 @@ import PnRelationDeleteModal from "../components/delete-modal/PnRelationDeleteMo
 import PartNumberDeleteModal from "../components/delete-modal/PartNumberDeleteModal.jsx";
 import PartNumberEditModal from "../components/edit-modal/PartNumberEditModal.jsx";
 import PartNumberPDFModal from "../components/pdf-modal/PartNumberPDFModal.jsx";
+import PartNumberConfirmationModal from "../components/confirmation-modal/PartNumberConfirmationModal.jsx";
 
 const PartNumberPage = () => {
   const user = useAuthStore((state) => state.user)
 
   const {
     loading,
-    isPartNumberLoading,
+    isPreviewAddPartNumberLoading,
     isPnRelationLoading,
     error,
     selectedPart,
 
+    isConfirmationModalOpen,
     isTreeModalOpen,
     isPDFModalOpen,
     isEditModalOpen,
     isPnRelationDeleteModalOpen,
     isPartNumberDeleteModalOpen,
 
+    openConfirmationModal,
     openTreeModal,
     openPDFModal,
     openEditModal,
     openPnRelationDeleteModal,
     openPartNumberDeleteModal,
 
+    closeConfirmationModal,
     closeTreeModal,
     closePDFModal,
     closeEditModal,
@@ -57,7 +61,7 @@ const PartNumberPage = () => {
     setSearchFilters,
     resetSearchFilters,
 
-    addPartNumber,
+    previewAddPartNumber,
     fetchPartNumbers,
     addPnRelation,
     fetchPnForest,
@@ -95,6 +99,15 @@ const PartNumberPage = () => {
     setSearchFilters(name, value);
   }
 
+  const handlePreviewAddPartNumber = async (e) => {
+    e.preventDefault()
+    const isValid = await previewAddPartNumber()
+
+    if (isValid) {
+      openConfirmationModal()
+    }
+  }
+
   return (
     <div className={styles.pageBody}>
       <Navbar />
@@ -114,7 +127,7 @@ const PartNumberPage = () => {
             <div className={styles.formInput}>
               <h2>Part Number Generator</h2>
 
-              <form onSubmit={addPartNumber}>
+              <form onSubmit={handlePreviewAddPartNumber}>
                 <label className={styles.formLabel} htmlFor="pn-kind">Kind</label>
                 <select 
                   id="pn-kind"
@@ -228,7 +241,7 @@ const PartNumberPage = () => {
                   disabled={!pnFormData.kindCode || !pnFormData.categoryCode || !pnFormData.functionCode || !pnFormData.designationCode || !pnFormData.description || !pnFormData.createdBy}
                   className={styles.addButton}
                 >
-                  {isPartNumberLoading ? (
+                  {isPreviewAddPartNumberLoading ? (
                     <span className={styles.spinner}></span>
                   ) : (
                     <>
@@ -526,6 +539,12 @@ const PartNumberPage = () => {
         </div>
         
       </div>
+
+      <PartNumberConfirmationModal 
+        isConfirmationModalOpen={isConfirmationModalOpen}
+        closeConfirmationModal={closeConfirmationModal}
+      />
+
       <PnTreeModal
         isTreeModalOpen={isTreeModalOpen}
         selectedPart={selectedPart}

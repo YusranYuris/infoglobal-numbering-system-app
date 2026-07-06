@@ -22,29 +22,6 @@ export const getAllDrawingNumber = async (req, res) => {
     }
 };
 
-export const getDrawingNumber = async (req, res) => {
-    const { id } = req.params;
-    
-    try {
-        const drawingNumber = await db
-            .select()
-            .from(drawingNumbers)
-            .where(eq(drawingNumbers.idDn, id))
-
-        res.status(200).json({
-            success: true,
-            data: drawingNumber[0]
-        })
-
-    } catch (error) {
-        console.log("Error in getDrawingNumber function", error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-};
-
 export const createDrawingNumber = async (req, res) => {
     let { 
         drawingKind, 
@@ -64,32 +41,10 @@ export const createDrawingNumber = async (req, res) => {
             message: "All fields are required"
         });
     };
-    
-    if (isSequenced) {
-        const maxResult = await db
-            .select({maxSeq: max(drawingNumbers.sequence)})
-            .from(drawingNumbers)
-            .where(
-                and(
-                    eq(drawingNumbers.drawingKind, drawingKind),
-                    eq(drawingNumbers.kindCode, kindCode),
-                    eq(drawingNumbers.categoryCode, categoryCode),
-                    eq(drawingNumbers.functionCode, functionCode),
-                    eq(drawingNumbers.designationCode, designationCode),
-                    eq(drawingNumbers.isSequenced, isSequenced)
-                )
-            );
-        
-        sequence = (maxResult[0].maxSeq || 0) + 1;
-    };
 
     const formattedSequence = String(sequence).padStart(3, "0");
 
     const formattedIdDn = `${drawingKind}-${kindCode + categoryCode + functionCode}-${designationCode + formattedSequence}`;
-
-    if (sequence === "") {
-        sequence = null;
-    }
     
     try {
         const newDrawingNumber = await db
@@ -137,6 +92,155 @@ export const createDrawingNumber = async (req, res) => {
             message: error.message
         });
     };
+};
+
+export const previewAddDrawingNumber = async (req, res) => {
+    const {
+        drawingKind,
+        kindCode,
+        categoryCode,
+        functionCode,
+        designationCode,
+        sequence,
+        description,
+        createdBy
+    } = req.body;
+
+    try {
+        if (!drawingKind || !kindCode || !categoryCode || !functionCode || !designationCode || !description || !createdBy) {
+            return res.status(400).json({
+                valid: false,
+                message: "All fields are required"
+            });
+        };
+
+        // If User Input the Sequence
+        if (sequence) {
+            const check = await db
+                .select()
+                .from(drawingNumbers)
+                .where(
+                    and(
+                        eq(drawingNumbers.drawingKind, drawingKind),
+                        eq(drawingNumbers.kindCode, kindCode),
+                        eq(drawingNumbers.categoryCode, categoryCode),
+                        eq(drawingNumbers.functionCode, functionCode),
+                        eq(drawingNumbers.designationCode, designationCode),
+                        eq(drawingNumbers.sequence, sequence)
+                    )
+                )
+            // If the Sequence is already taken
+            if (check.length > 0) {
+                const sequences = await db
+                    .select({
+                        sequence: drawingNumbers.sequence,
+                    })
+                    .from(drawingNumbers)
+                    .where(
+                        and(
+                            eq(drawingNumbers.drawingKind, drawingKind),
+                            eq(drawingNumbers.kindCode, kindCode),
+                            eq(drawingNumbers.categoryCode, categoryCode),
+                            eq(drawingNumbers.functionCode, functionCode),
+                            eq(drawingNumbers.designationCode, designationCode),
+                        )
+                    )
+                    .orderBy(drawingNumbers.sequence);
+                
+                let next = 1;
+                for (const row of sequences) {
+                    if (row.sequence === next) {
+                        next++;
+                    } else if (row.sequence > next) {
+                        break;
+                    }
+                };
+
+                const formattedDn = `${drawingKind}-${kindCode + categoryCode + functionCode}-${designationCode + String(next).padStart(3, "0")}`;
+
+
+                res.status(200).json({
+                    valid: true,
+                    chosen: true,
+                    dn: formattedDn,
+                    sequence: next
+                });
+            } else {
+                const formattedDn = `${drawingKind}-${kindCode + categoryCode + functionCode}-${designationCode + String(sequence).padStart(3, "0")}`;
+
+                res.status(200).json({
+                    valid: true,
+                    chosen: false,
+                    dn: formattedDn,
+                    sequence: sequence
+                });
+            }
+        } else {
+            // If User didn't input the Sequence
+            const sequences = await db
+                .select({
+                    sequence: drawingNumbers.sequence,
+                })
+                .from(drawingNumbers)
+                .where(
+                    and(
+                        eq(drawingNumbers.drawingKind, drawingKind),
+                        eq(drawingNumbers.kindCode, kindCode),
+                        eq(drawingNumbers.categoryCode, categoryCode),
+                        eq(drawingNumbers.functionCode, functionCode),
+                        eq(drawingNumbers.designationCode, designationCode),
+                    )
+                )
+                .orderBy(drawingNumbers.sequence);
+            
+            let next = 1;
+            for (const row of sequences) {
+                if (row.sequence === next) {
+                    next++;
+                } else if (row.sequence > next) {
+                    break;
+                }
+            };
+
+            const formattedDn = `${drawingKind}-${kindCode + categoryCode + functionCode}-${designationCode + String(next).padStart(3, "0")}`;
+
+            res.status(200).json({
+                valid: true,
+                chosen: false,
+                dn: formattedDn,
+                sequence: next
+            });
+        }
+    } catch (error) {
+        console.log("Error in previewAddDrawingNumber function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}
+
+export const getDrawingNumber = async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        const drawingNumber = await db
+            .select()
+            .from(drawingNumbers)
+            .where(eq(drawingNumbers.idDn, id))
+
+        res.status(200).json({
+            success: true,
+            data: drawingNumber[0]
+        })
+
+    } catch (error) {
+        console.log("Error in getDrawingNumber function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 };
 
 export const deleteDrawingNumber = async (req, res) => {

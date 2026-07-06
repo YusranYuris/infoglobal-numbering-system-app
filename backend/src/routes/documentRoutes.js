@@ -4,6 +4,7 @@ import {
     deleteDocument, 
     getAllDocuments, 
     getDocument, 
+    previewAddDocument, 
     updateDocument
 } from "../controllers/documentController.js"
 import { authenticate } from "../middleware/authMiddleware.js";
@@ -18,6 +19,9 @@ router.get("/", authenticate, getAllDocuments)
 
 // Create New Document
 router.post("/", authenticate, upload.single("pdf"), createDocument)
+
+// Preview New Document Number
+router.post("/preview", authenticate, previewAddDocument)
 
 // Get Document
 router.get("/:id", authenticate, getDocument)

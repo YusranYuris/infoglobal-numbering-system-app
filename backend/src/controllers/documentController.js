@@ -34,29 +34,6 @@ export const getAllDocuments = async (req, res) => {
     };
 };
 
-export const getDocument = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const document = await db
-            .select()
-            .from(documents)
-            .where(eq(documents.idDoc, id));
-
-        res.status(200).json({
-            success: true,
-            data: document[0]
-        });
-        
-    } catch (error) {
-        console.log("Error in getDocument function", error);
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    };
-};
-
 export const createDocument = async (req, res) => {
     const {
         productAbbr,
@@ -78,24 +55,6 @@ export const createDocument = async (req, res) => {
             success: false,
             message: "All fields are required"
         });
-    };
-
-    if (isSequenced === true) {
-        const maxResult = await db
-            .select({maxSeq: max(documents.sequence)})
-            .from(documents)
-            .where(
-                and(
-                    eq(documents.productAbbr, productAbbr),
-                    eq(documents.docKind, docKind),
-                    eq(documents.department, department),
-                    eq(documents.companyAbbr, companyAbbr),
-                    eq(documents.year, year),
-                    eq(documents.isSequenced, isSequenced)
-                )
-            );
-        
-        sequence = (maxResult[0].maxSeq || 0) + 1;
     };
 
     const formattedIdDoc = `${productAbbr}-${docKind}${String(sequence).padStart(3, "0")}${String(department).padStart(2, "0")}-${companyAbbr}-${year}`;
@@ -137,6 +96,152 @@ export const createDocument = async (req, res) => {
             message: error.message
         });
     }
+};
+
+export const previewAddDocument = async (req, res) => {
+    const {
+        productAbbr,
+        docKind,
+        department,
+        companyAbbr,
+        year,
+        sequence
+    } = req.body;
+
+    try {
+        if (!productAbbr || !docKind || department === null || !companyAbbr || !year) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        };
+
+        // If User Input the Sequence
+        if (sequence) {
+            const check = await db
+                .select()
+                .from(documents)
+                .where(
+                    and(
+                        eq(documents.productAbbr, productAbbr),
+                        eq(documents.docKind, docKind),
+                        eq(documents.department, department),
+                        eq(documents.companyAbbr, companyAbbr),
+                        eq(documents.year, year),
+                        eq(documents.sequence, sequence)
+                    )
+                )
+
+            // If the Sequence is already taken
+            if (check) {
+                const sequences = await db
+                    .select({
+                        sequence: documents.sequence,
+                    })
+                    .from(documents)
+                    .where(
+                        and(
+                            eq(documents.productAbbr, productAbbr),
+                            eq(documents.docKind, docKind),
+                            eq(documents.department, department),
+                            eq(documents.companyAbbr, companyAbbr),
+                            eq(documents.year, year),
+                        )
+                    )
+                    .orderBy(documents.sequence)
+                
+                let next = 1;
+                for (const row of sequences) {
+                    if (row.sequence === next) {
+                        next++;
+                    } else if (row.sequence > next) {
+                        break;
+                    }
+                };
+
+                const formattedDoc = `${productAbbr}-${docKind}${String(next).padStart(3, "0")}${String(department).padStart(2, "0")}-${companyAbbr}-${year}`
+
+                res.status(200).json({
+                    valid: true,
+                    chose: true,
+                    doc: formattedDoc,
+                    seqeunce: next
+                })
+            } else {
+                const formattedDoc = `${productAbbr}-${docKind}${String(sequence).padStart(3, "0")}${String(department).padStart(2, "0")}-${companyAbbr}-${year}`
+
+                res.status(200).json({
+                    valid: true,
+                    chose: false,
+                    doc: formattedDoc,
+                    seqeunce: next
+                })
+            }
+        } else {
+            // If User didn't input the Sequence
+            const sequences = await db
+                .select({
+                    sequence: documents.sequence,
+                })
+                .from(documents)
+                .where(
+                    and(
+                        eq(documents.productAbbr, productAbbr),
+                        eq(documents.docKind, docKind),
+                        eq(documents.department, department),
+                        eq(documents.companyAbbr, companyAbbr),
+                        eq(documents.year, year),
+                    )
+                )
+                .orderBy(documents.sequence);
+            
+            let next = 1;
+            for (const row of sequences) {
+                if (row.sequence === next) {
+                    next++;
+                } else if (row.sequence > next) {
+                    break;
+                }
+            };
+
+            const formattedDoc = `${productAbbr}-${docKind}${String(next).padStart(3, "0")}${String(department).padStart(2, "0")}-${companyAbbr}-${year}`
+            res.status(200).json({
+                valid: true,
+                chosen: false,
+                doc: formattedDoc,
+                sequence: next
+            });
+        }
+    } catch (error) {
+        console.log("Error in previewAddDocument function", error)
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        })
+    }
+}
+
+export const getDocument = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const document = await db
+            .select()
+            .from(documents)
+            .where(eq(documents.idDoc, id));
+
+        res.status(200).json({
+            success: true,
+            data: document[0]
+        });
+        
+    } catch (error) {
+        console.log("Error in getDocument function", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    };
 };
 
 // Untuk update Description dan File PDF pada Document

@@ -10,6 +10,7 @@ import DnTreeModal from "../components/tree-modal/DnTreeModal.jsx";
 import DnDeleteModal from "../components/delete-modal/DnDeleteModal.jsx";
 import DnEditModal from "../components/edit-modal/DnEditModal.jsx";
 import DrawingNumberPDFModal from "../components/pdf-modal/DnPDFModal.jsx";
+import DrawingNumberConfirmationModal from "../components/confirmation-modal/DrawingNumberConfirmationModal.jsx";
 
 const DrawingNumberPage = () => {
   const user = useAuthStore((state) => state.user)
@@ -17,10 +18,12 @@ const DrawingNumberPage = () => {
   const { 
     selectedBranch,
 
+    isPreviewAddDrawingNumberLoading,
     isDrawingNumberLoading,
     isDnBranchLoading,
     loading, 
 
+    previewAddDrawingNumber,
     fetchDrawingNumbers, 
     fetchDnBranches, 
     addDrawingNumber,  
@@ -37,16 +40,19 @@ const DrawingNumberPage = () => {
     setDnFormData,
     setDnBranchFormData,
 
+    isConfirmationModalOpen,
     isTreeModalOpen,
     isPDFModalOpen,
     isEditModalOpen,
     isDeleteModalOpen,
 
+    openConfirmationModal,
     openTreeModal,
     openPDFModal,
     openEditModal,
     openDeleteModal,
     
+    closeConfirmationModal,
     closeTreeModal,
     closePDFModal,
     closeEditModal,
@@ -75,6 +81,15 @@ const DrawingNumberPage = () => {
     setSearchFilters(name, value);
   }
 
+  const handlePreviewAddDrawingNumber = async (e) => {
+    e.preventDefault()
+    const isValid = await previewAddDrawingNumber()
+
+    if (isValid) {
+      openConfirmationModal()
+    }
+  }
+
   return (
     <div className={styles.pageBody}>
       {/* NAVBAR */}
@@ -95,7 +110,7 @@ const DrawingNumberPage = () => {
             <div className={styles.formInput}>
               <h2>Drawing Number Generator</h2>
 
-              <form onSubmit={addDrawingNumber}>
+              <form onSubmit={handlePreviewAddDrawingNumber}>
                 <label className={styles.formLabel} htmlFor="dn-drawing-kind">Drawing Kind</label>
                 <select 
                   id="dn-drawing-kind"
@@ -215,7 +230,7 @@ const DrawingNumberPage = () => {
                   disabled={!dnFormData.drawingKind || !dnFormData.kindCode || !dnFormData.categoryCode || !dnFormData.functionCode || !dnFormData.designationCode || !dnFormData.description || !dnFormData.createdBy}
                   className={styles.addButton}
                 >
-                  {isDrawingNumberLoading ? (
+                  {isPreviewAddDrawingNumberLoading ? (
                     <span className={styles.spinner}></span>
                   ) : (
                     <>
@@ -472,6 +487,11 @@ const DrawingNumberPage = () => {
         </div>
 
       </div>
+
+      <DrawingNumberConfirmationModal 
+        isConfirmationModalOpen={isConfirmationModalOpen}
+        closeConfirmationModal={closeConfirmationModal}
+      />
 
       <DnTreeModal
         isTreeModalOpen={isTreeModalOpen}

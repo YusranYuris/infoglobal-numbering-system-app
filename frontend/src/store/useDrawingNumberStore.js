@@ -8,10 +8,16 @@ export const useDrawingNumberStore = create((set, get) => ({
     error: null,
 
     // For Drawing Number Generator Form
-    isDrawingNumberLoading: false,
+    fixedSequence: null,
+    isPreviewAddDrawingNumberLoading: false,
 
     // For DN Branch Generator Form
     isDnBranchLoading: false,
+
+    // For Part Number Add Preview Modal
+    previewDn: "",
+    modalMessage: "",
+    isDrawingNumberLoading: false,
 
     // For DN Branch Edit Modal
     isDnBranchEditModalLoading: false,
@@ -25,18 +31,21 @@ export const useDrawingNumberStore = create((set, get) => ({
     selectedBranch: null,
 
     // Conditional to Open Modal
+    isConfirmationModalOpen: false,
     isTreeModalOpen: false,
     isPDFModalOpen: false,
     isEditModalOpen: false,
     isDeleteModalOpen: false,
 
     // Open Modal Function
+    openConfirmationModal: () => set({isConfirmationModalOpen: true}),
     openTreeModal: (branch) => set({ isTreeModalOpen: true, selectedBranch: branch }),
     openPDFModal: (branch) => set({ isPDFModalOpen: true, selectedBranch: branch }),
     openEditModal: (branch) => set({ isEditModalOpen: true, selectedBranch: branch }),
     openDeleteModal: (branch) => set({ isDeleteModalOpen: true, selectedBranch: branch }),
     
     // Close Modal Function
+    closeConfirmationModal: () => set({isConfirmationModalOpen: false}),
     closeTreeModal: () => set({ isTreeModalOpen: false, selectedBranch: null, dnFamily: {} }),
     closePDFModal: () => set({ isPDFModalOpen: false, selectedBranch: null, dnFamily: {} }),
     closeEditModal: () => set({ isEditModalOpen: false, selectedBranch: null }),
@@ -142,17 +151,28 @@ export const useDrawingNumberStore = create((set, get) => ({
         },
     }),
 
-    addDrawingNumber: async (e) => {
-        e.preventDefault();
+    fetchDrawingNumbers: async () => {
+        set({loading: true});
+        try {
+            const response = await api.get("/drawing-numbers")
+            set({drawingNumbers: response.data.data, error: null})
+        } catch (error) {
+            set({error: "Something went wrong", drawingNumbers: []})
+        } finally {
+            set({loading: false})
+        }
+    },
+
+    addDrawingNumber: async () => {
         set({isDrawingNumberLoading: true})
 
         try {
-            const { dnFormData } = get();
+            const { dnFormData, fixedSequence } = get();
             const formData = {
                 ...dnFormData,
-                kindCode: dnFormData.kindCode === "" ? null : parseInt(dnFormData.kindCode, 10),
-                functionCode: dnFormData.functionCode === "" ? null : parseInt(dnFormData.functionCode, 10),
-                isSequenced: dnFormData.sequence === "" ? true : false
+                kindCode: parseInt(dnFormData.kindCode, 10),
+                functionCode: parseInt(dnFormData.functionCode, 10),
+                sequence: parseInt(fixedSequence, 10)
             };
 
             const response = await api.post("/drawing-numbers", formData)
@@ -164,21 +184,70 @@ export const useDrawingNumberStore = create((set, get) => ({
 
             toast.success(`Drawing Number: ${response.data.data.branch.idBranch} successfully added`)
 
+            return true
         } catch (error) {
             console.log("Error in addDrawingNumber function")
             toast.error("Something went wrong")
+
+            return false
         } finally {
             set({isDrawingNumberLoading: false})
         }
     },
 
-    fetchDrawingNumbers: async () => {
+    // Preview Add Drawing Number Action
+    previewAddDrawingNumber: async () => {
+        set({isPreviewAddDrawingNumberLoading: true})
+        try {
+            const { dnFormData } = get();
+            const formData = {
+                ...dnFormData,
+                kindCode: dnFormData.kindCode === "" ? null : parseInt(dnFormData.kindCode, 10),
+                functionCode: dnFormData.functionCode === "" ? null : parseInt(dnFormData.functionCode, 10),
+                isSequenced: dnFormData.sequence === "" ? true : false
+            };
+
+            delete formData.pdf;
+
+            const response = await api.post("/drawing-numbers/preview", formData);
+
+            if (response.data.chosen) {
+                set({
+                    modalMessage: "The Sequence you chose is not available, we recommend this Drawing Number: ",
+                    error: null
+                })
+            } else {
+                set({
+                    modalMessage: "Are you sure you want too add this Drawing Number: ",
+                    error: null
+                })
+            }
+            set({
+                previewDn: response.data.dn,
+                fixedSequence: response.data.sequence
+            })
+
+            return true
+
+        } catch (error) {
+            console.log(error)
+            console.log("Error in previewAddDrawingNumber function")
+            toast.error("Something went wrong")
+
+            return false
+        } finally {
+            set({isPreviewAddDrawingNumberLoading: false})
+        }
+    },
+
+    fetchDnBranches: async () => {
         set({loading: true});
         try {
-            const response = await api.get("/drawing-numbers")
-            set({drawingNumbers: response.data.data, error: null})
+            const response = await api.get("/dn-branches")
+
+            set({dnBranches: response.data.data, error: null})
         } catch (error) {
-            set({error: "Something went wrong", drawingNumbers: []})
+            set({error: "Something went wrong", dnBranches: []})
         } finally {
             set({loading: false})
         }
@@ -212,19 +281,6 @@ export const useDrawingNumberStore = create((set, get) => ({
             toast.error("Something went wrong")
         } finally {
             set({isDnBranchLoading: false})
-        }
-    },
-
-    fetchDnBranches: async () => {
-        set({loading: true});
-        try {
-            const response = await api.get("/dn-branches")
-
-            set({dnBranches: response.data.data, error: null})
-        } catch (error) {
-            set({error: "Something went wrong", dnBranches: []})
-        } finally {
-            set({loading: false})
         }
     },
 
