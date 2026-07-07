@@ -15,18 +15,21 @@ const router = express.Router();
 
 // ------- DRAWING NUMBER BRANCHES ROUTES -------
 
+// ====== Collection ======
 // Get All Branch
 router.get("/", authenticate, getAllBranch);
 
 // Create New Branch
 router.post("/", authenticate, upload.single("pdf"), createBranch);
 
+// ====== Custom Resource ======
 // Get Tree
 router.get("/:rootId/tree", authenticate, getTree)
 
 // Preview Delete Branch
 router.get("/:id/preview-delete", authenticate, previewDeleteBranch)
 
+// ====== Resource ======
 // Get Branch
 router.get("/:id",  authenticate, getBranch);
 

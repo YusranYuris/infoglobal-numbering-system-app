@@ -10,6 +10,7 @@ import { drawingNumbers } from "../db/schema/drawingNumbers.js";
 import { buildDnTree } from "../utils/buildDnTree.js";
 import { check } from "drizzle-orm/gel-core";
 
+// Get All Branch for Drawing Number Table
 export const getAllBranch = async (req, res) => {
     try {
         const allBranch = await db
@@ -36,6 +37,7 @@ export const getAllBranch = async (req, res) => {
     };
 };
 
+// Create New Branch for Drawing Number Branch Form
 export const createBranch = async (req, res) => {
     let {
         rootId,
@@ -44,19 +46,21 @@ export const createBranch = async (req, res) => {
         subSg,
         description,
         createdBy
-    } = req.body;  //Nanti yang createdBy diedit kalau udah pake JWT
+    } = req.body;
 
     const pdfFile = req.file;
 
-    // First Validation
+    // First Validation (Checking if there is empty values)
     if (!rootId || group===null || !description || !createdBy)
+        console.log("All fields are required (Missing fields detected)")
         return res.status(400).json({
             success: false,
             message: "All fields are required"
         });
 
-    // Second Validation
+    // Second Validation (Checking if Sub-Group is null and Sub-SG is not null which violates the rull)
     if (!subGroup && subSg) {
+        console.log("Sub-Group field is null but Sub-SG field is not null. This action will violate the rules of Drawing Number")
         return res.status(400).json({
             success: false,
             message: "Invalid Assignment"
@@ -66,7 +70,7 @@ export const createBranch = async (req, res) => {
     const numSubGroup = subGroup ? Number(subGroup) : 0;
     const numSubSg = subSg ? Number(subSg) : 0;
 
-    // Third Validation
+    // Third Validation (Checking for Duplicate)
     const checkDuplicate = await db
         .select()
         .from(dnBranches)
@@ -103,14 +107,14 @@ export const createBranch = async (req, res) => {
     const formattedBranch = String(`${rootId}-${formattedGroupSubGroupSubSG}`);
 
     try {
-        // Mengambil file PDF
+        // Receiving the Uploaded PDF File
         let pdfUrl = null;
 
         if (pdfFile) {
+            // Uploading File to Supabase Storage Bucket and receiving the file URL
             pdfUrl = await uploadFile("drawing-number", pdfFile, formattedBranch, description);
         }
 
-        // Insert ke dalam tabel dn_branch pada database
         const newBranch = await db
             .insert(dnBranches)
             .values({
@@ -123,6 +127,7 @@ export const createBranch = async (req, res) => {
                 createdBy: createdBy,
                 pdfUrl: pdfUrl
             }).returning();
+
         res.status(201).json({
             success: true,
             data: newBranch[0],
@@ -137,6 +142,7 @@ export const createBranch = async (req, res) => {
     };
 };
 
+// Get the Family Tree of a certain Drawing Number
 export const getTree = async (req, res) => {
     const { rootId } = req.params;
 
@@ -153,6 +159,7 @@ export const getTree = async (req, res) => {
             });
         }
         
+        // Using the utils for Building a Drawing Number Tree
         const tree = buildDnTree(family);
 
         res.status(200).json({
@@ -169,6 +176,7 @@ export const getTree = async (req, res) => {
     }
 };
 
+// Get all the affected Drawing Number for the Delete Modal
 export const previewDeleteBranch = async (req, res) => {
     const { id } = req.params;
 
@@ -247,6 +255,7 @@ export const previewDeleteBranch = async (req, res) => {
     }
 }
 
+// Get a single Drawing Number Branch for the Edit Modal
 export const getBranch = async (req, res) => {
     const { id } = req.params;
 
@@ -270,7 +279,7 @@ export const getBranch = async (req, res) => {
     }
 };
 
-// Untuk update Description dan File PDF pada Drawing Number Branch
+// Update a selected branch for the Edit Action
 export const updateBranch = async (req, res) => {
     const { id } = req.params;
     const { description, pdfUrl } = req.body;
@@ -294,6 +303,7 @@ export const updateBranch = async (req, res) => {
             });
         }
 
+        // If User insert a new PDF file, the system will delete the original file in the storage and upload the new one
         if (pdfFile) {
             await deleteFile(formattedBranch[0].pdfUrl)
 
@@ -302,11 +312,15 @@ export const updateBranch = async (req, res) => {
             updateData.pdfUrl = pdfUrl;
         }
 
+        // Drawing Number originally have a PDF Attachment
         if (formattedBranch[0].pdfUrl) {
+            
+            // If User only remove the original PDF File
             if (!pdfFile && !pdfUrl) {
                 await deleteFile(formattedBranch[0].pdfUrl)
                 updateData.pdfUrl = pdfUrl
             } else {
+                // If the User only change the Description, automatically it will change the original PDF file name
                 const pdfLink = await renameFile("drawing-number", formattedBranch[0].idPn, formattedBranch[0].description, description)
 
                 updateData.pdfUrl = pdfLink
@@ -335,12 +349,12 @@ export const updateBranch = async (req, res) => {
         console.log("Error in updateBranch function", error)
         res.status(500).json({
             success:false,
-            message: "Internal server error"
+            message: error.message
         })
     }
 }
 
-// Untuk delete branch Drawing Number
+// Delete a selected Drawing Number for the Delete Action
 export const deleteBranch = async (req, res) => {
     const { id } = req.params;
 
@@ -357,6 +371,7 @@ export const deleteBranch = async (req, res) => {
             });
         };
 
+        // Searching for an Affected Branch if this Drawing Number Branch is deleted
         let affectedBranch = []
 
         if (dnBranch[0].group === 0) {
@@ -402,14 +417,17 @@ export const deleteBranch = async (req, res) => {
             affectedBranch = [dnBranch[0]]
         }
 
+        // Deleting every PDF Attachment for all of the Affected Branch (If Available)
         for (const branch of affectedBranch) {
             await deleteFile(branch.pdfUrl)
         };
 
+        // Mapping all the Affected Branches ID
         const branchesToDelete = affectedBranch.map(
             branches => branches.idBranch
         );
 
+        // Delete All Branch based on ID
         const deletedBranches = await db
             .delete(dnBranches)
             .where(inArray(dnBranches.idBranch, branchesToDelete))
@@ -427,7 +445,7 @@ export const deleteBranch = async (req, res) => {
         console.log("Error in deleteBranch function", error)
         res.status(500).json({
             success:false,
-            message: "Internal server error"
+            message: error.message
         })
     }
 }
