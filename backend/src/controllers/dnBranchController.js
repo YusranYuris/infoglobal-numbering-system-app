@@ -50,13 +50,19 @@ export const createBranch = async (req, res) => {
 
     const pdfFile = req.file;
 
+    console.log(rootId)
+    console.log(group)
+    console.log(description)
+    console.log(createdBy)
+
     // First Validation (Checking if there is empty values)
-    if (!rootId || group===null || !description || !createdBy)
+    if (!rootId || !group===null || !description || !createdBy){
         console.log("All fields are required (Missing fields detected)")
         return res.status(400).json({
             success: false,
             message: "All fields are required"
         });
+    }
 
     // Second Validation (Checking if Sub-Group is null and Sub-SG is not null which violates the rull)
     if (!subGroup && subSg) {

@@ -268,6 +268,8 @@ export const useDrawingNumberStore = create((set, get) => ({
                 }
             });
 
+            console.log(payload.values())
+
             const response = await api.post("/dn-branches", payload)
 
             await get().fetchDnBranches();

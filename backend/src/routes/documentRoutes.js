@@ -14,6 +14,7 @@ const router = express.Router();
 
 // ------- DOCUMENTS ROUTES -------
 
+// ====== Collection ======
 // Get All Documents
 router.get("/", authenticate, getAllDocuments)
 
@@ -23,6 +24,7 @@ router.post("/", authenticate, upload.single("pdf"), createDocument)
 // Preview New Document Number
 router.post("/preview", authenticate, previewAddDocument)
 
+// ====== Resource ======
 // Get Document
 router.get("/:id", authenticate, getDocument)
 
