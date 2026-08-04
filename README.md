@@ -4,7 +4,6 @@
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?logo=postgresql)
 ![Drizzle](https://img.shields.io/badge/ORM-Drizzle-C5F74F)
-![License](https://img.shields.io/badge/License-MIT-blue)
 
 A full-stack web application developed during my Software Engineering Internship at **PT. Infoglobal Teknologi Semesta** to centralize engineering data management and improve product traceability through hierarchical visualization.
 
