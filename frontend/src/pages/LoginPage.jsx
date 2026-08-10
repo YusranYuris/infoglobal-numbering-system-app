@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios.js";
 import { useAuthStore } from "../store/useAuthStore.js";
 
 import styles from '../styles/LoginPage.module.css'
@@ -9,30 +7,35 @@ import infoglobalLogo from "../assets/logos/infoglobal-logo.png"
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { 
+    loginFormData,
+    setLoginFormData,
+    loginService,
+    isLoginLoading,
+    loginError,
+    clearLoginError
+  } = useAuthStore()
 
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  const handleLogin = async () => {
-    try {
-      const response = await api.post(
-        "/users/login",
-        {
-          email, password
-        }
-      );
+    const success = await loginService();
 
-      const { token, user } = response.data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      setAuth(user, token)
-
+    if (success) {
       navigate("/home");
-    } catch (error) {
-      console.log(error)
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setLoginFormData({
+      ...loginFormData,
+      [name]: value,
+    });
+
+    if (loginError) {
+      clearLoginError();
     }
   }
 
@@ -43,26 +46,44 @@ const LoginPage = () => {
           <img className={styles.logoMd} src={infoglobalLogo} alt="infoglobal-logo" />
           <h1 className={styles.loginHeading}>Login</h1>
 
-          {/* EMAIL INPUT */}
-          <input 
-            className={styles.loginInput}
-            type="email" 
-            name="email" 
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <form onSubmit={handleLogin}>
+            {/* EMAIL INPUT */}
+            <input 
+              className={styles.loginInput}
+              type="email" 
+              name="email" 
+              placeholder="Email"
+              value={loginFormData.email}
+              onChange={handleInputChange}
+              disabled={isLoginLoading}
+            />
 
-          {/* PASSWORD INPUT */}
-          <input 
-            className={styles.loginInput} 
-            type="password" 
-            name="password" 
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            {/* PASSWORD INPUT */}
+            <input 
+              className={styles.loginInput} 
+              type="password" 
+              name="password" 
+              placeholder="Password"
+              value={loginFormData.password}
+              onChange={handleInputChange}
+              disabled={isLoginLoading}
+            />
 
-          {/* LOGIN BUTTON */}
-          <button onClick={handleLogin} className={styles.loginButton}>Login</button>
+            {/* LOGIN BUTTON */}
+            <button
+              type="submit" 
+              disabled={!loginFormData.email || !loginFormData.password || isLoginLoading}
+              className={styles.loginButton}
+            >
+              {isLoginLoading ? (
+                <span className={styles.spinner}></span>
+              ) : (
+                <>
+                Login
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </div>
