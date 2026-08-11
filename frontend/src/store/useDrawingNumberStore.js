@@ -182,12 +182,20 @@ export const useDrawingNumberStore = create((set, get) => ({
 
             get().resetDnFormData();
 
-            toast.success(`Drawing Number: ${response.data.data.branch.idBranch} successfully added`)
+            toast.success(`Drawing Number: ${response.data.data.branch.idBranch} successfully added`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return true
         } catch (error) {
             console.log("Error in addDrawingNumber function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false
         } finally {
@@ -232,7 +240,11 @@ export const useDrawingNumberStore = create((set, get) => ({
         } catch (error) {
             console.log(error)
             console.log("Error in previewAddDrawingNumber function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false
         } finally {
@@ -274,12 +286,20 @@ export const useDrawingNumberStore = create((set, get) => ({
 
             get().resetDnBranchFormData();
 
-            toast.success(`Drawing Number Branch: ${response.data.data.idBranch} added successfully`)
+            toast.success(`Drawing Number Branch: ${response.data.data.idBranch} added successfully`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
         } catch (error) {
             console.log("Error in addDnBranch function", error)
             toast.error(
-                error.response?.data?.message || "Something went wrong"
+                error.response?.data?.message || "Something went wrong", {
+                    style: {
+                        fontSize: '1.5rem'
+                    }
+                }
             )
         } finally {
             set({isDnBranchLoading: false})
@@ -330,12 +350,20 @@ export const useDrawingNumberStore = create((set, get) => ({
 
             get().resetEditDnBranchFormData()
 
-            toast.success(`Drawing Number: ${response.data.data.idBranch} has been successfully updated.`)
+            toast.success(`Drawing Number: ${response.data.data.idBranch} has been successfully updated.`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return true
             
         } catch (error) {
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isEditDnBranchLoading: false})
@@ -360,13 +388,21 @@ export const useDrawingNumberStore = create((set, get) => ({
         try {
             const response = await api.delete(`/drawing-numbers/${id}`)
             await get().fetchDnBranches()
-            toast.success(`Drawing Number: ${response.data.data.idDn} has been successfully deleted`)
+            toast.success(`Drawing Number: ${response.data.data.idDn} has been successfully deleted`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return true
 
             
         } catch (error) {
             console.log("Error in deleteDrawingNumber function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isDeleteBranchLoading: false})
@@ -377,7 +413,11 @@ export const useDrawingNumberStore = create((set, get) => ({
         set({isDeleteBranchLoading: true})
         try {
             const response = await api.delete(`/dn-branches/${id}`)
-            toast.success(`Drawing Number: ${response.data.data.mainBranch.idBranch} has been successfully deleted`)
+            toast.success(`Drawing Number: ${response.data.data.mainBranch.idBranch} has been successfully deleted`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             const ids = response.data.data.branchesToDelete
             set(prev => ({
                 dnBranches: prev.dnBranches.filter(branch => !ids.includes(branch.idBranch))
@@ -387,7 +427,11 @@ export const useDrawingNumberStore = create((set, get) => ({
 
         } catch (error) {
             console.log("Error in deleteBranch function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isDeleteBranchLoading: false})

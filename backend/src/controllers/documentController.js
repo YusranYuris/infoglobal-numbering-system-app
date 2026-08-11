@@ -108,7 +108,7 @@ export const previewAddDocument = async (req, res) => {
     } = req.body;
 
     try {
-        if (!productAbbr || !docKind || department === null || !companyAbbr || !year) {
+        if (!productAbbr || docKind === null || department === null || !companyAbbr || !year) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
@@ -132,7 +132,7 @@ export const previewAddDocument = async (req, res) => {
                 )
 
             // If the Sequence is already taken
-            if (check) {
+            if (check.length > 0) {
                 const sequences = await db
                     .select({
                         sequence: documents.sequence,

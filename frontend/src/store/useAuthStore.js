@@ -53,6 +53,12 @@ export const useAuthStore = create((set, get) => ({
 
             get().resetLoginFormData()
 
+            toast.success('Login Success, Welcome!', {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
+
             return true;
         } catch (error) {
             let loginError;
@@ -86,7 +92,11 @@ export const useAuthStore = create((set, get) => ({
                 loginError,
             });
 
-            toast.error(loginError)
+            toast.error(loginError, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false;
         } finally {

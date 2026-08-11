@@ -161,12 +161,20 @@ export const useDocumentStore = create((set, get) => ({
 
             get().resetDocFormData();
 
-            toast.success(`Document Number: ${response.data.data.idDoc} has been added successfully`)
+            toast.success(`Document Number: ${response.data.data.idDoc} has been added successfully`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return true
         } catch (error) {
             console.log("Error in addDocument funciton", error);
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false
         } finally {
@@ -186,6 +194,9 @@ export const useDocumentStore = create((set, get) => ({
             };
 
             delete formData.pdf;
+
+            console.log("DOC FORM DATA:", docFormData);
+            console.log("FORM DATA YANG DIKIRIM:", formData);
 
             const response = await api.post("/documents/preview", formData);
 
@@ -210,7 +221,11 @@ export const useDocumentStore = create((set, get) => ({
         } catch (error) {
             console.log(error)
             console.log("Error in previewAddDocument function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false
         } finally {
@@ -252,11 +267,19 @@ export const useDocumentStore = create((set, get) => ({
 
             get().resetEditDocFormData();
 
-            toast.success(`Document Number: ${response.data.data.idDoc} has been successfully updated.`)
+            toast.success(`Document Number: ${response.data.data.idDoc} has been successfully updated.`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return true
         } catch (error) {
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false
         } finally {
@@ -269,11 +292,19 @@ export const useDocumentStore = create((set, get) => ({
         try {
             const response = await api.delete(`/documents/${id}`)
             set(prev => ({documents: prev.documents.filter(document => document.idDoc !== id)}))
-            toast.success(`Document Number: ${response.data.data.idDoc} has been successfully deleted.`)
+            toast.success(`Document Number: ${response.data.data.idDoc} has been successfully deleted.`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return true
         } catch (error) {
             console.log("Error in deleteDocument function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isDeleteDocumentLoading: false})

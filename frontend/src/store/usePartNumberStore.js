@@ -197,14 +197,22 @@ export const usePartNumberStore = create((set, get) => ({
 
             get().resetPnFormData();
 
-            toast.success(`Part Number: ${response.data.data.idPn} successfully added`)
+            toast.success(`Part Number: ${response.data.data.idPn} successfully added`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return true
 
         } catch (error) {
             console.log(error)
             console.log("Error in addPartNumber function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isPartNumberLoading: false})
@@ -248,7 +256,11 @@ export const usePartNumberStore = create((set, get) => ({
         } catch (error) {
             console.log(error)
             console.log("Error in previewAddPartNumber function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return false
         } finally {
@@ -292,11 +304,19 @@ export const usePartNumberStore = create((set, get) => ({
 
             get().resetEditPnFormData()
 
-            toast.success(`Part Number: ${response.data.data.idPn} has been successfully updated.`)
+            toast.success(`Part Number: ${response.data.data.idPn} has been successfully updated.`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
             return true
         } catch (error) {
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isEditPartNumberLoading: false})
@@ -318,12 +338,20 @@ export const usePartNumberStore = create((set, get) => ({
 
             await get().fetchPnForest()
             await get().resetPnRelationFormData()
-            toast.success(`Part Number: ${response.data.data.pnCode} has been added to ${response.data.data.rootId}`)
+            toast.success(`Part Number: ${response.data.data.pnCode} has been added to ${response.data.data.rootId}`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
 
         } catch (error) {
             console.log("Error in addPnRelation function", error)
             toast.error(
-                error.response?.data?.message || "Something went wrong"
+                error.response?.data?.message || "Something went wrong", {
+                    style: {
+                        fontSize: '1.5rem'
+                    }
+                }
             )
         } finally {
             set({isPnRelationLoading: false})
@@ -370,7 +398,11 @@ export const usePartNumberStore = create((set, get) => ({
         set({isDeletePnRelationLoading: true})
         try {
             const response = await api.delete(`/pn-relations/${id}`)
-            toast.success(`Part Number Relation: ${response.data.data.mainRelation.pnCode} has been successfully deleted`)
+            toast.success(`Part Number Relation: ${response.data.data.mainRelation.pnCode} has been successfully deleted`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             const ids = response.data.data.relationsToDelete
             set(prev => ({
                 pnForest: prev.pnForest.filter(relations => !ids.includes(relations.idRelations))
@@ -379,7 +411,11 @@ export const usePartNumberStore = create((set, get) => ({
             return true
         } catch (error) {
             console.log("Error in deletePnRelation function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isDeletePnRelationLoading: false})
@@ -390,12 +426,20 @@ export const usePartNumberStore = create((set, get) => ({
         set({isDeletePartNumberLoading: true})
         try {
             const response = await api.delete(`part-numbers/${id}`)
-            toast.success(`Part Number Relation: ${response.data.data.idPn} has been successfully deleted`)
+            toast.success(`Part Number Relation: ${response.data.data.idPn} has been successfully deleted`, {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             set(prev => ({partNumbers: prev.partNumbers.filter(partNumber => partNumber.idPn !== id)}))
             return true
         } catch (error) {
             console.log("Error in deletePnRelation function")
-            toast.error("Something went wrong")
+            toast.error("Something went wrong", {
+                style: {
+                    fontSize: '1.5rem'
+                }
+            })
             return false
         } finally {
             set({isDeletePartNumberLoading: false})
