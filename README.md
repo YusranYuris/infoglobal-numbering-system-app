@@ -5,7 +5,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?logo=postgresql)
 ![Drizzle](https://img.shields.io/badge/ORM-Drizzle-C5F74F)
 
-A full-stack web application developed during my Software Engineering Internship at **PT. Infoglobal Teknologi Semesta** to centralize engineering data management and improve product traceability through hierarchical visualization.
+A full-stack web application developed at **PT. Infoglobal Teknologi Semesta** to centralize engineering data management and improve product traceability through hierarchical visualization.
 
 The system manages **Part Numbers**, **Drawing Numbers**, and **Document Numbers** while providing engineering-oriented features such as **Parent-Child Relationships**, **Tree Visualization**, and **Configuration Management** for aerospace and defense manufacturing workflows.
 
@@ -147,7 +147,7 @@ Frontend and backend are fully separated and communicate through REST APIs using
 
 Structured engineering data and engineering documents are stored independently.
 
-- PostgreSQL stores metadata.
+- Neon PostgreSQL stores metadata.
 - Supabase Storage stores engineering documents.
 
 This architecture keeps the database lightweight while improving scalability.
@@ -177,7 +177,7 @@ This architecture keeps the database lightweight while improving scalability.
 
 | Layer | Technology |
 |--------|------------|
-| Frontend | React, Vite, JavaScript, Bootstrap |
+| Frontend | React, Vite, JavaScript |
 | Backend | Node.js, Express.js |
 | Database | PostgreSQL (Neon Database) |
 | ORM | Drizzle ORM |
@@ -188,22 +188,158 @@ This architecture keeps the database lightweight while improving scalability.
 
 ---
 
+# Getting Started
+
+This section explains how to set up and run the application locally for development and testing.
+
+## Prerequisites
+
+Make sure the following software is installed on your machine:
+
+- Node.js
+- npm
+- Git
+
+The application also requires access to:
+
+- Neon PostgreSQL database
+- Supabase Storage
+
+## 1. Clone the Repository
+
+Clone the repository and navigate to the project directory:
+```
+git clone <repository-url>
+cd <repository-folder>
+```
+
+## 2. Backend Setup
+
+Navigate to the backend directory:
+```
+cd backend
+```
+
+Install all backend dependencies:
+```
+npm install
+```
+
+Create a .env file inside the backend directory with the following configuration:
+```
+PORT=3000
+
+DATABASE_URL=<your-database-url>
+
+JWT_SECRET_KEY=<your-jwt-secret>
+
+SUPABASE_URL=<your-supabase-url>
+
+SUPABASE_SECRET_KEY=<your-supabase-secret-key>
+```
+
+Run the database migrations:
+```
+npm run migrate
+```
+
+Start the backend development server:
+```
+npm run dev
+```
+
+The backend will run on:
+```
+http://localhost:3000
+```
+
+## 3. Frontend Setup
+
+Open a new terminal and navigate to the frontend directory
+```
+cd frontend
+```
+
+Install all frontend dependencies:
+```
+npm install
+```
+
+Create a .env file inside the frontend directory:
+```
+VITE_API_URL=http://localhost:3000/api/v1
+```
+
+Start the frontend development server:
+```
+npm run dev
+```
+
+Vite will provide a local development URL, typically:
+```
+http://localhost:5173
+```
+Open the provided URL in a web browser to access the application.
+
+## 4. Running the Application
+
+The frontend and backend must be running simultaneously during local development.
+
+### Backend
+From the backend directory:
+```
+npm run dev
+```
+
+### Frontend
+From the frontend directory:
+```
+npm run dev
+```
+
+The frontend communicates with the backend through the REST API configured in the VITE_API_URL environment variable.
+
+## 5. Database Migration
+The backend uses Drizzle ORM for database schema management.
+
+When setting up the project for the first time, apply the existing database migrations using:
+```
+npm run migrate
+```
+
+When making changes to the database schema during development, generate a new migration using:
+```
+npm run generate
+```
+
+Then apply the migration:
+```
+npm run migrate
+```
+
 # Project Structure
 
 ```
-├── client/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── assets/
+├── frontend/
+│   └── src/
+│       ├── api/
+│       ├── assets/
+│       ├── components/
+│       ├── constants/
+│       ├── pages/
+│       ├── routes/
+│       ├── store/
+│       └── styles/
 │
-├── server/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── routes/
-│   ├── schema/
-│   ├── db/
-│   └── utils/
+├── backend/
+│   └── src/
+│       ├── config/
+│       ├── controllers/
+│       ├── db/
+│       ├── middleware/
+│       ├── routes/
+│       ├── utils/
+│       └── server.js
 │
 └── README.md
 ```
@@ -257,4 +393,4 @@ Potential enhancements include:
 Information Systems Undergraduate  
 Universitas Airlangga
 
-Software Engineering Internship Project at **PT Infoglobal Teknologi Semesta**
+Internship Project at **PT Infoglobal Teknologi Semesta**
